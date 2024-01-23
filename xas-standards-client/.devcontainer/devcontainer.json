@@ -1,0 +1,9 @@
+{
+    "image":"node:18-bullseye-slim",
+    "postCreateCommand":"yes | npm install -g pnpm",
+    "forwardPorts": [5173],
+    "runArgs": [
+		"--security-opt=label=type:container_runtime_t"
+	],
+
+}
