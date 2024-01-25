@@ -11,8 +11,12 @@ classifiers = [
 ]
 description = "REST api for xas standards database"
 dependencies = [
+    "xraylarch",
     "fastapi",
     "uvicorn[standard]",
+    "sqlmodel",
+    "fastapi-pagination",
+    "python-multipart",
 ] # Add project dependencies here, e.g. ["click", "numpy"]
 dynamic = ["version"]
 license.file = "LICENSE"
