@@ -10,8 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@h5web/lib": "^10.1.0",
+    "@types/ndarray": "^1.0.14",
+    "axios": "^1.6.7",
+    "ndarray": "^1.0.19",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.21.3"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

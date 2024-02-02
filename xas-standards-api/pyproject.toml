@@ -17,6 +17,8 @@ dependencies = [
     "sqlmodel",
     "fastapi-pagination",
     "python-multipart",
+    "psycopg2",
+    "sqlakeyset",
 ] # Add project dependencies here, e.g. ["click", "numpy"]
 dynamic = ["version"]
 license.file = "LICENSE"

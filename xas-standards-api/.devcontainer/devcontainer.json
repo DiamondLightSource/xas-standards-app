@@ -30,7 +30,7 @@
     // Make sure the files we are mapping into the container exist on the host
     "initializeCommand": "bash -c 'for i in $HOME/.inputrc; do [ -f $i ] || touch $i; done'",
     "runArgs": [
-        "--net=host",
+        "--network=host",
         "--security-opt=label=type:container_runtime_t"
     ],
     "mounts": [

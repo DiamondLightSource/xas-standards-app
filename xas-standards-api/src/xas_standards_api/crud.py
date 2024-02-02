@@ -140,8 +140,8 @@ def add_new_standard(session, file1, identifier):
                               submitter_id=person.id)
 
 
-    new_standard = XASStandard.from_orm(xs)
-    new_standard.xas_standard_data = XASStandardData.from_orm(xsd)
+    new_standard = XASStandard.model_validate(xs)
+    new_standard.xas_standard_data = XASStandardData.model_validate(xsd)
     session.add(new_standard)
     session.commit()
     session.refresh(new_standard)
@@ -157,8 +157,13 @@ def get_data(session, id):
     standard = session.get(XASStandard, id)
     if not standard:
         raise HTTPException(status_code=404, detail=f"No standard with id={id}")
+    
+    standard_data = session.get(XASStandardData, standard.data_id)
 
-    xdi_data = xdi.read_xdi(pvc_location + str(standard.id) + ".xdi")
+    if not standard_data:
+        raise HTTPException(status_code=404, detail=f"No standard data for standard with id={id}")
+
+    xdi_data = xdi.read_xdi(standard_data.location)
 
     if "energy" not in xdi_data:
         raise HTTPException(status_code=404, detail=f"No energy in file with id={id}")
