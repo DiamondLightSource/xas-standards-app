@@ -86,7 +86,7 @@ class XASStandardDataInput(SQLModel):
     original_filename: str
     transmission: bool
     fluorescence: bool
-    reference: bool
+    emission: bool
     location: str
 
 class XASStandardData(XASStandardDataInput, table=True):
@@ -95,8 +95,6 @@ class XASStandardData(XASStandardDataInput, table=True):
     id: int | None = Field(primary_key=True, default=None)
 
     xas_standard: "XASStandard" = Relationship(back_populates="xas_standard_data")
-
-
 
 
 class ReviewStatus(enum.Enum):
@@ -110,84 +108,45 @@ class LicenceType(enum.Enum):
     logged_in_only = "logged_in_only"
 
 
-class XASStandardSubmission(SQLModel):
-    licence: str
-
-
-
-class XASStandardFormInput(SQLModel):
-
-    submitter: str
-    submission_date: datetime.datetime
-    collection_date: Optional[datetime.datetime]
-    doi: Optional[str] = None
-    element_z: int = Field(foreign_key="element.z")
-    edge_id: int = Field(foreign_key="edge.id")
-    sample_name: str
-    sample_prep: Optional[str]
-    sample_composition: str
-    beamline_id: int = Field(foreign_key="beamline.id")
-    submitter_comments: Optional[str]
-    licence : LicenceType = Field(sa_column=Column(Enum(LicenceType)))
-
-
 class XASStandardInput(SQLModel):
 
     submitter_id: int = Field(foreign_key="person.id")
-    reviewer_id: Optional[int] = Field(foreign_key="person.id")
     submission_date: datetime.datetime
     collection_date: Optional[datetime.datetime]
-    review_status: Optional[ReviewStatus] = Field(sa_column=Column(Enum(ReviewStatus)))
-    reviewer_comments: Optional[str] = None
     doi: Optional[str] = None
+    citation: Optional[str] = None
     element_z: int = Field(foreign_key="element.z")
     edge_id: int = Field(foreign_key="edge.id")
     sample_name: str
     sample_prep: Optional[str]
+    sample_comp: Optional[str]
     beamline_id: int = Field(foreign_key="beamline.id")
-    mono_name: Optional[str]
-    mono_dspacing: Optional[str]
-    additional_metadata: Optional[str]
     licence : LicenceType = Field(sa_column=Column(Enum(LicenceType)))
 
 class XASStandard(XASStandardInput, table=True):
     __tablename__: str = "xas_standard"
     id: int | None = Field(primary_key=True, default=None)
     data_id: int | None = Field(foreign_key="xas_standard_data.id", default=None)
+    reviewer_id: Optional[int] = Field(foreign_key="person.id", default=None)
+    reviewer_comments: Optional[str] = None
+    review_status: Optional[ReviewStatus] = Field(sa_column=Column(Enum(ReviewStatus)), default=ReviewStatus.pending)
 
     xas_standard_data: XASStandardData = Relationship(back_populates="xas_standard")
     element: Element = Relationship(sa_relationship_kwargs={"lazy": "joined"})
     edge: Edge = Relationship(sa_relationship_kwargs={"lazy": "joined"})
     beamline: Beamline = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
 
-# class ElementResponse(SQLModel):
-
-
 class XASStandardResponse(XASStandardInput):
     id : int | None 
     element: ElementInput
     edge: EdgeInput
     beamline: BeamlineResponse
+    submitter_id: int 
 
 
+class XASStandardAdminResponse(XASStandardResponse):
+    reviewer_id: Optional[int] = None
+    reviewer_comments: Optional[str] = None
+    review_status: Optional[ReviewStatus] = None
 
-# class XASStandardFormInput(SQLModel):
-#     submitter_identifier: str
-#     # submitter_id INTEGER NOT NULL,
-#     # reviewer_id INTEGER,
-#     submission_date: datetime.datetime
-#     collection_date: datetime.datetime
-#     # data_id INTEGER,
-#     # review_status review_status_enum NOT NULL,
-#     # reviewer_comments TEXT,
-#     doi: Optional[str] = None
-#     element_z_name: str
-#     # edge_id INTEGER,
-#     # sample_name TEXT,
-#     # sample_prep TEXT,
-#     # beamline_id INTEGER,
-#     # mono_name TEXT,
-#     # mono_dspacing TEXT,
-#     # additional_metadata TEXT,
-#     # licence licence_enum NOT NULL,
 

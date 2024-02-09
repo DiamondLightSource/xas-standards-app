@@ -6,23 +6,7 @@ import StandardsTable from "./StandardsTable.tsx";
 
 import { XASStandard, XASData } from "../models.ts";
 
-const standards_url = "/api/standards";
 const data_url = "/api/data";
-
-function GetButton(props: { setStandards: React.Dispatch<XASStandard[]> }) {
-  const [name, setName] = useState("Push");
-
-  const get_req = () => {
-    setName("working");
-    axios.get(standards_url).then((response) => {
-      const output: XASStandard[] = response.data.items as XASStandard[];
-      props.setStandards(output);
-      setName("Got");
-    });
-  };
-
-  return <button onClick={get_req}> {name}</button>;
-}
 
 function getData(setXASData: React.Dispatch<XASData>) {
   return (id: number) => {
@@ -42,8 +26,11 @@ function StandardViewer() {
 
   return (
     <div className="mainbody">
-      <GetButton setStandards={setStandardsList} />
-      <StandardsTable standards={standards} updatePlot={onClick} />
+      <StandardsTable
+        standards={standards}
+        updatePlot={onClick}
+        setStandards={setStandardsList}
+      />
       <XASChart xasdata={xasdata} />
     </div>
   );

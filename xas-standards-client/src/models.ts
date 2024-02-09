@@ -1,14 +1,17 @@
 export interface Element {
   symbol: string;
+  z: number;
 }
 
 export interface Edge {
   name: string;
+  id: number;
 }
 
 export interface XASData {
   energy: Array<number>;
-  itrans: Array<number>;
+  mutrans: Array<number>;
+  murefer: Array<number>;
 }
 
 export interface Beamline {
@@ -28,9 +31,4 @@ export interface XASStandard {
 export interface XASStandardInput {
   file1: File;
   licence: string;
-}
-
-export interface XASData {
-  energy: Array<number>;
-  itrans: Array<number>;
 }

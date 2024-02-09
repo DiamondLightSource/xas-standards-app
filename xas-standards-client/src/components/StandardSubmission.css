@@ -5,6 +5,7 @@
   align-items: flex-start;
 }
 
-.formitem {
-
+.twocolumn {
+  display: grid;
+  grid-template-columns: auto auto;
 }

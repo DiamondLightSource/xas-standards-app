@@ -5,31 +5,57 @@ import axios from "axios";
 import XDIFile from "../xdifile";
 
 import "./StandardSubmission.css";
+import ElementForm from "./ElementForm";
+import SampleForm from "./SampleForm";
+import InstrumentForm from "./InstrumentForm";
+import CitationForm from "./CitationForm";
+import AdditionalInformationForm from "./AdditionalInfoForm";
+
+import { Edge, Element } from "../models";
 
 const standards_url = "/api/standards";
 const beamlines_url = "/api/beamlines";
-
-//https://api.crossref.org/works/10.1039/C2AN35914F/?mailto=jacob.filik@diamond.ac.uk
+const elements_url = "/api/elements";
+const edges_url = "/api/edges";
+const licences_url = "/api/licences";
 
 function StandardSubmission() {
   const [file, setFile] = useState<File>();
   const [file2, setFile2] = useState<FileList>();
 
-  const [element, setElement] = useState("");
-  const [edge, setEdge] = useState("");
+  const [elementId, setElementId] = useState(1);
+  const [edgeId, setEdgeId] = useState(1);
   const [sampleName, setSampleName] = useState("");
   const [sampleComp, setSampleComp] = useState("");
   const [samplePrep, setSamplePrep] = useState("");
+  const [beamlineId, setBeamlineId] = useState(1);
   const [doi, setDOI] = useState("");
   const [date, setDate] = useState("");
-  const [licence, setLicence] = useState("CC BY");
+  const [licence, setLicence] = useState("");
+  const [citation, setCitation] = useState("");
+  const [comments, setComments] = useState("");
 
   const [beamlines, setBeamlines] = useState([]);
+  const [elements, setElements] = useState<Element[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
+  const [licences, setLicences] = useState([]);
 
   useEffect(() => {
     axios.get(beamlines_url).then((res) => {
-      console.log(res.data[0].name);
       setBeamlines(res.data);
+    });
+
+    axios.get(elements_url).then((res) => {
+      setElements(res.data);
+    });
+
+    axios.get(edges_url).then((res) => {
+      setEdges(res.data);
+    });
+
+    axios.get(licences_url).then((res) => {
+      setLicences(res.data);
+      setLicence(res.data[0]);
     });
   }, []);
 
@@ -41,22 +67,33 @@ function StandardSubmission() {
     //so it is not called additional_files[]
     const form = new FormData();
 
+    if (!file) {
+      throw Error("File not defined");
+    }
+
     form.append("xdi_file", file);
-    form.append("element", element);
-    form.append("edge", edge);
-    form.append("sampleName", sampleName);
-    form.append("sampleComp", sampleComp);
-    form.append("samplePrep", samplePrep);
+    form.append("element_id", elementId.toString());
+    form.append("edge_id", edgeId.toString());
+    //BEAMLINE
+    form.append("beamline_id", beamlineId.toString());
+    form.append("sample_name", sampleName);
+    form.append("sample_comp", sampleComp);
+    form.append("sample_prep", samplePrep);
+    form.append("doi", doi);
+    form.append("citation", citation);
+    form.append("comments", comments);
+    form.append("date", date);
+    //LICENCE
     form.append("licence", licence);
 
-    for (let i = 0; i < file2.length; i++) {
-      form.append("additional_files", file2[i]);
+    if (file2 != null) {
+      for (let i = 0; i < file2.length; i++) {
+        form.append("additional_files", file2[i]);
+      }
     }
 
     axios.post(standards_url, form);
   };
-
-  const setBeamline = (event: React.ChangeEvent<HTMLSelectElement>) => {};
 
   const handleFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files != null) {
@@ -66,13 +103,15 @@ function StandardSubmission() {
         if (e.target != null && typeof e.target.result === "string") {
           const xdifile = XDIFile.parseFile(e.target.result);
 
-          setElement(xdifile.element ?? element);
-          setEdge(xdifile.edge ?? edge);
-          setSampleName(xdifile.sample[XDIFile.NAME] ?? sampleName);
-          setSampleComp(xdifile.sample[XDIFile.STOICHIOMETRY] ?? sampleComp);
-          setSamplePrep(xdifile.sample[XDIFile.PREP] ?? samplePrep);
+          const el = elements.find((e) => e.symbol === xdifile.element);
+          const ed = edges.find((e) => e.name === xdifile.edge);
 
-          console.log(xdifile.sample);
+          //TODO UPDATE TO USE ID
+          setElementId(el?.z ?? elementId);
+          setEdgeId(ed?.id ?? edgeId);
+          setSampleName(xdifile.sample?.name ?? sampleName);
+          setSampleComp(xdifile.sample?.stoichiometry ?? sampleComp);
+          setSamplePrep(xdifile.sample?.prep ?? samplePrep);
         }
       };
 
@@ -88,85 +127,66 @@ function StandardSubmission() {
     }
   };
 
-  const validateDOI = () => {
-    // prettier-ignore
-    const doi_regex = "^10.\\d{4,9}\\/[-._;()\\/:A-Z0-9]+$"; // eslint-disable-line
-    const found = new RegExp(doi_regex).test(doi);
-    console.log("found", found + " DOI " + doi);
-  };
-
   return (
     <div className="submissionpage">
-      <h1>Upload XDI file</h1>
+      <h2>Upload XDI file</h2>
       <form className="submissionpage" onSubmit={handleSubmit}>
         <input type="file" name="file1" onChange={handleFile} />
-        <label htmlFor="element">Element</label>
-        <input
-          type="text"
-          id="element"
-          value={element}
-          onChange={(e) => setElement(e.target.value)}
-        ></input>
-        <label htmlFor="edge">Edge</label>
-        <input
-          type="text"
-          id="edge"
-          value={edge}
-          onChange={(e) => setEdge(e.target.value)}
-        ></input>
-        <label htmlFor="samplename">Sample Name</label>
-        <input
-          type="text"
-          id="samplename"
-          value={sampleName}
-          onChange={(e) => setSampleName(e.target.value)}
-        ></input>
-        <label htmlFor="composition">Sample Composition</label>
-        <input
-          type="text"
-          id="composition"
-          value={sampleComp}
-          onChange={(e) => setSampleComp(e.target.value)}
-        ></input>
-        <label htmlFor="preparation">Sample Prep</label>
-        <input
-          type="text"
-          id="preparation"
-          value={samplePrep}
-          onChange={(e) => setSamplePrep(e.target.value)}
-        ></input>
-        <label htmlFor="beamline">Beamline</label>
-        <select name="beamline" id="beamline" onChange={(e) => setBeamline(e)}>
-          {beamlines.map((x, y) => (
-            <option key={y}>{x.name + " " + x.facility.name}</option>
-          ))}
-        </select>
-        <label htmlFor="date">Date Measured</label>
-        <input type="text" id="date"></input>
-        <label htmlFor="citation">Citation</label>
-        <input type="text" id="citation"></input>
-        <label htmlFor="doi">DOI</label>
-        <input
-          type="text"
-          id="doi"
-          value={doi}
-          onChange={(e) => setDOI(e.target.value)}
-        ></input>
-        <button type="button" onClick={validateDOI}>
-          Validate DOI
-        </button>
-        <label htmlFor="cooments">Comments</label>
-        <input type="text" id="comments"></input>
+        <div>
+          Submitted file must be in xdi format and contain an energy column, and
+          either "mu" datasets or "i" datasets with corresponding i0. Inclusion
+          of Reference datasets (murefer or irefer with i0) is mandatory.
+        </div>
+        <ElementForm
+          elementId={elementId}
+          setElementId={setElementId}
+          edgeId={edgeId}
+          setEdgeId={setEdgeId}
+          elements={elements}
+          edges={edges}
+        />
+        <SampleForm
+          sampleName={sampleName}
+          setSampleName={setSampleName}
+          sampleComp={sampleComp}
+          samplePrep={samplePrep}
+          setSamplePrep={setSamplePrep}
+        />
+        <InstrumentForm
+          beamlines={beamlines}
+          setBeamlineId={setBeamlineId}
+          beamlineId={beamlineId}
+          date={date}
+          setDate={setDate}
+        />
+        <CitationForm
+          citation={citation}
+          setCitation={setCitation}
+          doi={doi}
+          setDOI={setDOI}
+        />
+        <AdditionalInformationForm
+          comments={comments}
+          setComments={setComments}
+          handleFile2={handleFile2}
+        />
         <label htmlFor="Licence">Choose a Licence:</label>
         <select
           name="licence"
           id="licence"
+          value={licence}
           onChange={(e) => setLicence(e.target.value)}
         >
-          <option value="CC BY">CC BY</option>
-          <option value="CC BY-SA">CC BY-SA</option>{" "}
+          {licences.map((x, y) => (
+            <option key={y}>{x}</option>
+          ))}
         </select>
-        <input type="file" name="file2" onChange={handleFile2} multiple />
+        <input type="checkbox" id="agree" name="agree" value="agree" />
+        <label htmlFor="agree">
+          {" "}
+          By ticking I confirm info is correct and I grant permission for
+          diamond to publish data under selected licence
+        </label>
         <button type="submit">Submit</button>
       </form>
     </div>

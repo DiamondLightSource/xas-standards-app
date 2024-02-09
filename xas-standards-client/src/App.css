@@ -14,34 +14,8 @@
 .mainbody {
   display: flex;
   align-content: center;
-  height: 100%;
-  width: 100;
-}
-
-@media (prefers-color-scheme: dark) {
-  .mainbody {
-    background-color: #222222;
-  }
-  .root {
-    filter: invert();
-    --h5w-btnRaised--shadowColor: #f5f5f5;
-    --h5w-btnRaised-hover--shadowColor: #fff;
-    --h5w-domainSlider-track--shadowColor: #f5f5f5;
-    --h5w-domainSlider-dataTrack--shadowColor: #fff;
-
-    --h5w-line--color: deepskyblue;
-    --h5w-custom--line-colorAux: orange, lightgreen, red, violet, gold;
-  }
-
-  canvas {
-    filter: invert();
-  }
-}
-*/ .logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+  height: 100vh;
+  width: 100vw;
 }
 
 .logo:hover {

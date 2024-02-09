@@ -4,6 +4,8 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  background-color: var(--diamond-700);
+  color: var(--diamond-100);
 }
 
 .headerbuttons {
@@ -29,4 +31,5 @@ nav {
   border-style: solid;
   margin: auto;
   padding: 5px;
+  color: var(--diamond-75);
 }

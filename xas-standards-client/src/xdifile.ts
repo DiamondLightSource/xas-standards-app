@@ -30,22 +30,45 @@ class XDIFile {
   static EDGE = "edge";
   static PREP = "prep";
   static STOICHIOMETRY = "stoichiometry";
+  static COLUMN = "Column";
 
   static START_TIME = "start_time";
   static NAME = "name";
 
-  element;
-  edge;
-  sample;
-  beamline;
-  date;
+  static ENERGY = "energy";
+  static IREFER = "irefer";
+  static MUREFER = "murefer";
 
-  constructor(element, edge, sample, beamline, date) {
+  static TRANS = "trans";
+  static FLUOR = "fluor";
+  static MU = "mu";
+  static I = "i";
+  static I0 = "i0";
+
+  static MUSPEC = [XDIFile.MU + XDIFile.TRANS, XDIFile.MU + XDIFile.FLUOR];
+  static ISPEC = [XDIFile.I + XDIFile.TRANS, XDIFile.I + XDIFile.FLUOR];
+
+  element: string | null;
+  edge: string | null;
+  sample: { [key: string]: string } | null;
+  beamline: string | null;
+  date: string | null;
+  columns: string[];
+
+  constructor(
+    element: string | null,
+    edge: string | null,
+    sample: { [key: string]: string } | null,
+    beamline: string | null,
+    date: string | null,
+    columns: string[]
+  ) {
     this.element = element;
     this.edge = edge;
     this.sample = sample;
     this.beamline = beamline;
     this.date = date;
+    this.columns = columns;
   }
 
   //   Facility, Beamline, Mono, Detector, Sample, Scan, Element, Column
@@ -53,7 +76,8 @@ class XDIFile {
   static parseFile(xditext: string) {
     const lines = xditext.split("\n");
 
-    const sample = {};
+    const sample: { [key: string]: string } = {};
+    const columns = [];
     let beamline = null;
     let element = null;
     let edge = null;
@@ -88,11 +112,13 @@ class XDIFile {
           md.tag == XDIFile.START_TIME
         ) {
           date = md.value;
+        } else if (md.namespace === XDIFile.COLUMN) {
+          columns.push(md.value);
         }
       }
     }
 
-    return new XDIFile(element, edge, sample, beamline, date);
+    return new XDIFile(element, edge, sample, beamline, date, columns);
   }
 
   static checkHeaderLine(line: string) {
@@ -102,15 +128,59 @@ class XDIFile {
     }
   }
 
+  checkValid() {
+    if (!this.columns.includes(XDIFile.ENERGY)) {
+      throw new Error("Required column energy is missing!");
+    }
+
+    const hasI0 = this.columns.includes(XDIFile.I0);
+
+    if (
+      !(this.columns.includes(XDIFile.IREFER) && hasI0) ||
+      !this.columns.includes(XDIFile.MUREFER)
+    ) {
+      throw new Error("Required reference data is missing!");
+    }
+
+    const includes = (reference: string[], values: string[]) =>
+      values.some((v) => reference.includes(v));
+
+    const hasMu = includes(this.columns, XDIFile.MUSPEC);
+
+    if (hasMu) {
+      return true;
+    }
+
+    const hasI = includes(this.columns, XDIFile.ISPEC);
+
+    if (hasI && hasI0) {
+      return true;
+    }
+
+    return false;
+  }
+
   static parseMetadataLine(line: string): XDIMetaEntry {
     const cleaned_line = line.slice(1).trim();
     const idx = cleaned_line.indexOf(XDIFile.HEADER_SPLIT_TOKEN);
     const key = cleaned_line.slice(0, idx).trim();
-    const val = cleaned_line.slice(idx + 1).trim();
+    const val_unit = cleaned_line.slice(idx + 1).trim();
     const nsidx = key.indexOf(".");
     const ns = key.slice(0, nsidx);
     const tag = key.slice(nsidx + 1);
-    return new XDIMetaEntry(ns, tag, val, null);
+
+    const checkUnit = ns === XDIFile.COLUMN;
+
+    let val = val_unit;
+    let unit = null;
+
+    if (checkUnit) {
+      const vals = val_unit.split(" ");
+      val = vals[0].trim();
+      unit = checkUnit && vals.length > 1 ? vals[1].trim() : null;
+    }
+
+    return new XDIMetaEntry(ns, tag, val, unit);
   }
 }
 

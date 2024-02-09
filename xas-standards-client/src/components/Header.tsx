@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 export default function Header() {
   return (
     <div className="header">
-      <h1 className="headerstart">XAS Standards</h1>
+      <h2 className="headerstart">XAS Standards</h2>
       <div className="headerbuttons">
         <nav>
           <NavLink
@@ -22,7 +22,7 @@ export default function Header() {
             <div className="headernavitem"> Submit </div>
           </NavLink>
           <NavLink
-            to="/submit2"
+            to="/review"
             style={({ isActive }) => ({ color: isActive ? "#CCCCCC" : "gray" })}
           >
             <div className="headernavitem"> Review </div>

@@ -1,6 +1,7 @@
 import os
+import datetime
 from contextlib import asynccontextmanager
-from typing import Annotated,List, Optional
+from typing import Annotated,List, Optional, Union
 
 from fastapi import Depends, FastAPI, Form, UploadFile, File
 from fastapi.responses import HTMLResponse
@@ -11,15 +12,18 @@ from sqlmodel import Session, SQLModel, create_engine, select
 
 from fastapi.staticfiles import StaticFiles
 
-from .crud import add_new_standard, get_data, get_standard, update_review, get_beamlines
+from .crud import (add_new_standard, get_data, get_standard, update_review, select_all,select_or_create_person)
 from .schemas import (
     Review,
     XASStandard,
     Element,
+    Edge,
+    Beamline,
     BeamlineResponse,
     XASStandardResponse,
-    XASStandardSubmission,
-    XASStandardFormInput
+    XASStandardAdminResponse,
+    XASStandardInput,
+    LicenceType
 )
 
 dev = False
@@ -50,87 +54,91 @@ app = FastAPI(lifespan=lifespan)
 add_pagination(app)
 
 
-@app.get("/", response_class=HTMLResponse)
-async def root():
-    content = """<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <title>Upload</title>
-</head>
-<body>
-  <h1>Upload XDI file</h1>
-  <form action="http://localhost:5000/api/standards" method="post" enctype="multipart/form-data">
-  <p><input type="file" name="file1">
-  <p><label for="Licence">Choose a Licence:</label>
-<select name="licence" id="licence">
-  <option value="CC BY">CC BY</option>
-  <option value="CC BY-SA">CC BY-SA</option>
-</select> 
-  <p><button type="submit">Submit</button>
-</form>
-</body>
-</html>"""
-
-    return HTMLResponse(content=content, status_code=200)
+@app.get("/api/licences") 
+def read_licences(session: Session = Depends(get_session)) -> List[LicenceType]:
+    return list(LicenceType)
 
 @app.get("/api/beamlines") 
 def read_beamlines(session: Session = Depends(get_session))-> List[BeamlineResponse]:
-    bl = get_beamlines(session)
-    print(bl[0])
+    bl = select_all(session,Beamline)
     return bl
 
-@app.get("/api/standards")
-def read_standards(session: Session = Depends(get_session), element: str | None = None) -> CursorPage[XASStandardResponse]:
+@app.get("/api/elements") 
+def read_elements(session: Session = Depends(get_session))-> List[Element]:
+    e = select_all(session, Element)
+    return e
 
+@app.get("/api/edges") 
+def read_edges(session: Session = Depends(get_session))-> List[Edge]:
+    e = select_all(session, Edge)
+    return e
+
+@app.get("/api/standards")
+def read_standards(session: Session = Depends(get_session), 
+                   element: str | None = None,
+                   admin: bool = False,
+                   response_model=Union[XASStandardResponse, XASStandardAdminResponse]) -> CursorPage[XASStandardAdminResponse | XASStandardResponse]:
+    
+    #CHECK HEADER FOR ADMIN QUERY
 
     statement = select(XASStandard)
 
     if element:
         statement = statement.join(Element, XASStandard.element_z==Element.z).where(Element.symbol == element)
 
-    return paginate(session, statement.order_by(XASStandard.id))
+    if admin:
+        transformer = lambda x: [XASStandardAdminResponse.model_validate(i) for i in x]
+    else:
+        transformer = lambda x: [XASStandardResponse.model_validate(i) for i in x]
+
+    return paginate(session, statement.order_by(XASStandard.id), transformer=transformer)
 
 
 @app.get("/api/standards/{id}")
 async def read_standard(
     id: int, session: Session = Depends(get_session)
-) -> XASStandard:
+) -> XASStandardResponse:
     return get_standard(session, id)
 
 
 @app.post("/api/standards")
 def add_standard_file(
     xdi_file: UploadFile,
-    element:  Annotated[str, Form()],
-    edge:  Annotated[str, Form()],
-    sampleName:  Annotated[str, Form()],
-    samplePrep: Annotated[str, Form()],
+    element_id:  Annotated[str, Form()],
+    edge_id:  Annotated[str, Form()],
+    beamline_id:  Annotated[int, Form()],
+    sample_name:  Annotated[str, Form()],
+    sample_prep: Annotated[str, Form()],
+    doi: Annotated[str, Form()],
+    citation: Annotated[str, Form()],
+    comments: Annotated[str, Form()],
+    date: Annotated[str, Form()],
     licence:  Annotated[str, Form()],
-    additional_files: list[UploadFile],
-     sampleComp:  Optional[str] = Form(None),
+    additional_files: Optional[list[UploadFile]]= Form(None),
+    sample_comp:  Optional[str] = Form(None),
     session: Session = Depends(get_session)
 ) -> XASStandard:
-    
     
     if additional_files:
         print(f"Additional files {len(additional_files)}")
 
-    form_input = XASStandardFormInput(submitter="test1234",
-                                      submission_date=datetime.now(),
-                                      beamline_id=TODO,
-                                      doi=doi,
-                                      element_z=1,
-                                      edge_id=1,
-                                      sample_name=sampleName,
-                                      sample_prep=samplePrep,
-                                      beamline_id = 1,
-                                      submitter_comments= "hello",
-                                      licence=licence,collection_date=NOW,
-                                      sample_composition="H2O"
-    
+    person = select_or_create_person(session, "test1234")
 
-    return add_new_standard(session, xdi_file, "test1234")
+    form_input = XASStandardInput(submitter_id=person.id,
+                                      beamline_id=beamline_id,
+                                      doi=doi,
+                                      element_z=element_id,
+                                      edge_id=edge_id,
+                                      sample_name=sample_name,
+                                      sample_prep=sample_prep,
+                                      submitter_comments= comments,
+                                      citation=citation,
+                                      licence=licence,
+                                      collection_date=date,
+                                      submission_date=datetime.datetime.now(),
+                                      sample_comp=sample_comp)
+
+    return add_new_standard(session, xdi_file, form_input, additional_files)
 
 
 @app.patch("/api/standards")

@@ -1,26 +1,20 @@
 import os
 import uuid
-import difflib
 
-import datetime
 from fastapi import HTTPException
 from larch.io import xdi
 from sqlmodel import select
 
+from larch.xafs import pre_edge,set_xafsGroup
+
 from .schemas import (
     Beamline,
-    Facility,
-    Mono,
     Person,
     PersonInput,
-    Sample,
     XASStandard,
     XASStandardData,
     XASStandardInput,
-    XASStandardDataInput,
-    Edge,
-    Element,
-    LicenceType
+    XASStandardDataInput
 )
 
 pvc_location = "/scratch/xas-standards-pretend-pvc/"
@@ -29,12 +23,10 @@ def get_beamline_names(session):
     results = session.exec(select(Beamline.name, Beamline.id)).all();
     return results
 
-
-def get_beamlines(session):
-    statement = select(Beamline)
+def select_all(session, sql_model):
+    statement = select(sql_model)
     results = session.exec(statement)
     return results.unique().all()
-
 
 def get_standard(session, id) -> XASStandard:
     standard = session.get(XASStandard, id)
@@ -52,22 +44,23 @@ def update_review(session, review):
     session.refresh(standard)
     return standard
 
-
-def add_new_standard(session, file1, identifier):
+def select_or_create_person(session, identifier):
     p = PersonInput(identifier=identifier)
 
     statement = select(Person).where(Person.identifier == p.identifier)
     person = session.exec(statement).first()
 
     if person is None:
-        print("no person")
         new_person = Person.from_orm(p)
         session.add(new_person)
         session.commit()
         session.refresh(new_person)
         person = new_person
-    else:
-        print(person.id)
+
+    return person
+
+
+def add_new_standard(session, file1, xs_input : XASStandardInput, additional_files):
 
     tmp_filename = pvc_location + str(uuid.uuid4())
 
@@ -76,79 +69,23 @@ def add_new_standard(session, file1, identifier):
         ntf.write(file1.file.read())
         xdi_data = xdi.read_xdi(filename)
 
-        statement = select(Element).where(Element.symbol == xdi_data.element)
-        element = session.exec(statement).first()
+        set_labels = set(xdi_data.array_labels)
 
-        if element is None:
-            raise HTTPException(status_code=404, detail=f"No element with symbol = {xdi_data.element}")
+        fluorescence = "mufluro" in set_labels
+        transmission = "mutrans" in set_labels
+        emission = "mutey" in set_labels
 
-        statement = select(Edge).where(Edge.name == xdi_data.edge)
-        edge = session.exec(statement).first()
-
-        if edge is None:
-            raise HTTPException(status_code=404, detail=f"No edge with name = {xdi_data.edge}")
-        
-        bldict = xdi_data.attrs.get("beamline", {})
-
-        names = get_beamline_names(session)
-        #difflib to find closest?
-
-        just_names = [n[0] for n in names]
-        match = difflib.get_close_matches(bldict["name"], just_names)
-
-        if not match:
-            raise HTTPException(status_code=404, detail=f"No beamline with name = {bldict['name']}")
-        
-        bl_id = None
-
-        print(f"Input {bldict['name']} matches {match[0]}")
-
-        for name_id in names:
-            if match[0] == name_id[0]:
-                bl_id = name_id[1]
-                break
-
-        if bl_id is None:
-            raise HTTPException(status_code=500, detail=f"Could not find beamline id")
-        
-        xsd = XASStandardDataInput(fluorescence=True,
+        xsd = XASStandardDataInput(fluorescence=fluorescence,
                                    location=tmp_filename,
                                    original_filename=file1.filename,
-                                   reference=True,
-                                   transmission=True)
+                                   emission=emission,
+                                   transmission=transmission)
 
-        bl = Beamline(**xdi_data.attrs.get("beamline", {}))
-        fac = Facility(**xdi_data.attrs.get("facility", {}))
-        samp = Sample(**xdi_data.attrs.get("sample", {}))
-        mono = Mono(**xdi_data.attrs.get("mono", {}))
-
-        xs = XASStandardInput(sample_name=samp.name,
-                              sample_prep=samp.prep,
-                              additional_metadata=None,
-                              beamline_id=bl_id,
-                              collection_date=None,
-                              doi=None,
-                              element_z=element.z,
-                              edge_id=edge.id,
-                              licence=LicenceType.cc_by,
-                              mono_dspacing=None,
-                              mono_name=None,
-                              review_status=None,
-                              reviewer_comments=None,
-                              submission_date=datetime.datetime.now(),
-                              reviewer_id=None,
-                              submitter_id=person.id)
-
-
-    new_standard = XASStandard.model_validate(xs)
+    new_standard = XASStandard.model_validate(xs_input)
     new_standard.xas_standard_data = XASStandardData.model_validate(xsd)
     session.add(new_standard)
     session.commit()
     session.refresh(new_standard)
-
-    # os.rename(tmp_filename, pvc_location + str(new_standard.id) + ".xdi")
-        
-    # new_standard = xs
 
     return new_standard
 
@@ -172,7 +109,18 @@ def get_data(session, id):
         raise HTTPException(status_code=404, detail=f"No itrans in file with id={id}")
 
     e = xdi_data["energy"]
-    i = xdi_data["mutrans"]
-    print(xdi_data.array_labels)
+    t = xdi_data["mutrans"]
+    r = xdi_data["murefer"]
 
-    return {"energy": e.tolist(), "itrans": i.tolist()}
+    tg = set_xafsGroup(None)
+    tg.energy = e
+    tg.mu = t
+    pre_edge(tg)
+
+    tr = set_xafsGroup(None)
+    tr.energy = e
+    tr.mu = r
+    pre_edge(tr)
+
+
+    return {"energy": e.tolist(), "mutrans": tg.flat.tolist(), "murefer": tr.flat.tolist()}
