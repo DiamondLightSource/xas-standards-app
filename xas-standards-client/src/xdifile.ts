@@ -54,6 +54,7 @@ class XDIFile {
   beamline: string | null;
   date: string | null;
   columns: string[];
+  comments: string | null;
 
   constructor(
     element: string | null,
@@ -61,7 +62,8 @@ class XDIFile {
     sample: { [key: string]: string } | null,
     beamline: string | null,
     date: string | null,
-    columns: string[]
+    columns: string[],
+    comments: string
   ) {
     this.element = element;
     this.edge = edge;
@@ -69,6 +71,7 @@ class XDIFile {
     this.beamline = beamline;
     this.date = date;
     this.columns = columns;
+    this.comments = comments;
   }
 
   //   Facility, Beamline, Mono, Detector, Sample, Scan, Element, Column
@@ -83,13 +86,25 @@ class XDIFile {
     let edge = null;
     let date = null;
 
+    let inComment = false;
+    let comment = "";
+
     for (let i = 0; i < lines.length; i++) {
       const l = lines[i];
+
+      if (inComment) {
+        if (l.slice(1).trim().startsWith("-")) {
+          break;
+        }
+
+        comment = comment + l.slice(1).trim() + "\n";
+      }
+
       if (i == 0) {
         this.checkHeaderLine(l);
       } else if (l.startsWith(XDIFile.COMMENT_TOKEN)) {
         if (l.slice(1).trim().startsWith("/")) {
-          break;
+          inComment = true;
         }
         const md = XDIFile.parseMetadataLine(l);
 
@@ -118,7 +133,7 @@ class XDIFile {
       }
     }
 
-    return new XDIFile(element, edge, sample, beamline, date, columns);
+    return new XDIFile(element, edge, sample, beamline, date, columns, comment);
   }
 
   static checkHeaderLine(line: string) {
@@ -167,7 +182,7 @@ class XDIFile {
     const val_unit = cleaned_line.slice(idx + 1).trim();
     const nsidx = key.indexOf(".");
     const ns = key.slice(0, nsidx);
-    const tag = key.slice(nsidx + 1);
+    const tag = key.slice(nsidx + 1).toLowerCase();
 
     const checkUnit = ns === XDIFile.COLUMN;
 

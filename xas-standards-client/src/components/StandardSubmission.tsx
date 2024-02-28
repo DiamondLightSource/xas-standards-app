@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
 import axios from "axios";
+import { AxiosResponse, AxiosError } from "axios";
 
 import XDIFile from "../xdifile";
 
@@ -12,6 +13,8 @@ import CitationForm from "./CitationForm";
 import AdditionalInformationForm from "./AdditionalInfoForm";
 
 import { Edge, Element } from "../models";
+
+import { useNavigate } from "react-router-dom";
 
 const standards_url = "/api/standards";
 const beamlines_url = "/api/beamlines";
@@ -29,6 +32,7 @@ function StandardSubmission() {
   const [sampleComp, setSampleComp] = useState("");
   const [samplePrep, setSamplePrep] = useState("");
   const [beamlineId, setBeamlineId] = useState(1);
+  const [beamlineHeader, setBeamlineHeader] = useState("");
   const [doi, setDOI] = useState("");
   const [date, setDate] = useState("");
   const [licence, setLicence] = useState("");
@@ -39,6 +43,8 @@ function StandardSubmission() {
   const [elements, setElements] = useState<Element[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [licences, setLicences] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get(beamlines_url).then((res) => {
@@ -92,7 +98,16 @@ function StandardSubmission() {
       }
     }
 
-    axios.post(standards_url, form);
+    axios
+      .post(standards_url, form)
+      .then((response: AxiosResponse) => {
+        console.log(response);
+        window.alert("Thank you for your submission");
+        navigate("/view");
+      })
+      .catch((reason: AxiosError) => {
+        window.alert(reason.message);
+      });
   };
 
   const handleFile = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,17 +116,36 @@ function StandardSubmission() {
 
       fileReader.onload = async (e: ProgressEvent<FileReader>) => {
         if (e.target != null && typeof e.target.result === "string") {
-          const xdifile = XDIFile.parseFile(e.target.result);
+          let xdifile: XDIFile;
+          try {
+            xdifile = XDIFile.parseFile(e.target.result);
+          } catch (error) {
+            let message = "Unknown Error";
+            if (error instanceof Error) {
+              message = error.message;
+            }
+            window.alert("Invalid file: " + message);
+            const resetForm: HTMLFormElement = document.getElementById(
+              "submissionform"
+            ) as HTMLFormElement;
+            if (resetForm) {
+              resetForm.reset();
+            }
+
+            return;
+          }
 
           const el = elements.find((e) => e.symbol === xdifile.element);
           const ed = edges.find((e) => e.name === xdifile.edge);
 
-          //TODO UPDATE TO USE ID
           setElementId(el?.z ?? elementId);
           setEdgeId(ed?.id ?? edgeId);
           setSampleName(xdifile.sample?.name ?? sampleName);
           setSampleComp(xdifile.sample?.stoichiometry ?? sampleComp);
           setSamplePrep(xdifile.sample?.prep ?? samplePrep);
+          setDate(xdifile.date ?? date);
+          setBeamlineHeader(xdifile.beamline ?? beamlineHeader);
+          setComments(xdifile.comments ?? comments);
         }
       };
 
@@ -129,64 +163,80 @@ function StandardSubmission() {
 
   return (
     <div className="submissionpage">
-      <h2>Upload XDI file</h2>
-      <form className="submissionpage" onSubmit={handleSubmit}>
-        <input type="file" name="file1" onChange={handleFile} />
-        <div>
-          Submitted file must be in xdi format and contain an energy column, and
-          either "mu" datasets or "i" datasets with corresponding i0. Inclusion
-          of Reference datasets (murefer or irefer with i0) is mandatory.
+      <h2>Upload A Standard XDI file</h2>
+      <form
+        className="submissionpage"
+        id="submissionform"
+        onSubmit={handleSubmit}
+      >
+        <fieldset>
+          <legend>XDI File</legend>
+          <input type="file" name="file1" onChange={handleFile} />
+          <div>
+            Submitted file must be in xdi format and contain an energy column,
+            and either "mu" datasets or "i" datasets with corresponding i0.
+            Inclusion of Reference datasets (murefer or irefer with i0) is
+            mandatory.
+          </div>
+        </fieldset>
+        <div className="twocolumn">
+          <ElementForm
+            elementId={elementId}
+            setElementId={setElementId}
+            edgeId={edgeId}
+            setEdgeId={setEdgeId}
+            elements={elements}
+            edges={edges}
+          />
+          <SampleForm
+            sampleName={sampleName}
+            setSampleName={setSampleName}
+            sampleComp={sampleComp}
+            setSampleComp={setSampleComp}
+            samplePrep={samplePrep}
+            setSamplePrep={setSamplePrep}
+          />
+          <InstrumentForm
+            beamlines={beamlines}
+            beamlineHeader={beamlineHeader}
+            setBeamlineId={setBeamlineId}
+            beamlineId={beamlineId}
+            date={date}
+            setDate={setDate}
+          />
+          <CitationForm
+            citation={citation}
+            setCitation={setCitation}
+            doi={doi}
+            setDOI={setDOI}
+          />
         </div>
-        <ElementForm
-          elementId={elementId}
-          setElementId={setElementId}
-          edgeId={edgeId}
-          setEdgeId={setEdgeId}
-          elements={elements}
-          edges={edges}
-        />
-        <SampleForm
-          sampleName={sampleName}
-          setSampleName={setSampleName}
-          sampleComp={sampleComp}
-          samplePrep={samplePrep}
-          setSamplePrep={setSamplePrep}
-        />
-        <InstrumentForm
-          beamlines={beamlines}
-          setBeamlineId={setBeamlineId}
-          beamlineId={beamlineId}
-          date={date}
-          setDate={setDate}
-        />
-        <CitationForm
-          citation={citation}
-          setCitation={setCitation}
-          doi={doi}
-          setDOI={setDOI}
-        />
         <AdditionalInformationForm
           comments={comments}
           setComments={setComments}
           handleFile2={handleFile2}
         />
-        <label htmlFor="Licence">Choose a Licence:</label>
-        <select
-          name="licence"
-          id="licence"
-          value={licence}
-          onChange={(e) => setLicence(e.target.value)}
-        >
-          {licences.map((x, y) => (
-            <option key={y}>{x}</option>
-          ))}
-        </select>
-        <input type="checkbox" id="agree" name="agree" value="agree" />
-        <label htmlFor="agree">
-          {" "}
-          By ticking I confirm info is correct and I grant permission for
-          diamond to publish data under selected licence
-        </label>
+        <div>
+          <label htmlFor="Licence">Choose a Licence:</label>
+          <select
+            name="licence"
+            id="licence"
+            value={licence}
+            onChange={(e) => setLicence(e.target.value)}
+          >
+            {licences.map((x, y) => (
+              <option key={y}>{x}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <input type="checkbox" id="agree" name="agree" value="agree" />
+          <label htmlFor="agree">
+            {" "}
+            By ticking I confirm info is correct and I grant permission for
+            diamond to publish data under selected licence
+          </label>
+        </div>
         <button type="submit">Submit</button>
       </form>
     </div>

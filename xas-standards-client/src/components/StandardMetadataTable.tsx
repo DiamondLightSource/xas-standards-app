@@ -1,9 +1,9 @@
 import { XASStandard } from "../models";
 
-function StandardMetadataTable(props: { standard: XASStandard }) {
-  const standard = props.standard;
+const data_url = "/api/data";
 
-  console.log(standard);
+function StandardMetadataTable(props: { standard: XASStandard | undefined }) {
+  const standard = props.standard;
 
   if (!standard) {
     return <div></div>;
@@ -46,7 +46,14 @@ function StandardMetadataTable(props: { standard: XASStandard }) {
         </tr>
         <tr>
           <th>Download</th>
-          <td> link </td>
+          <td>
+            <a
+              href={data_url + "/" + String(standard.id) + "?format=xdi"}
+              download={String(standard.id) + ".xdi"}
+            >
+              link
+            </a>
+          </td>
         </tr>
       </tbody>
     </table>

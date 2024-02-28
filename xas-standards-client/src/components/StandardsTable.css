@@ -22,6 +22,12 @@
   background-color: var(--diamond-400);
 }
 
+#standards tr {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 #standards tr:nth-child(even):not(.activeclicked) {
   background-color: #f2f2f2;
 }

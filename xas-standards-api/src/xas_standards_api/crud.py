@@ -2,6 +2,7 @@ import os
 import uuid
 
 from fastapi import HTTPException
+from fastapi.responses import FileResponse
 from larch.io import xdi
 from sqlmodel import select
 
@@ -71,7 +72,7 @@ def add_new_standard(session, file1, xs_input : XASStandardInput, additional_fil
 
         set_labels = set(xdi_data.array_labels)
 
-        fluorescence = "mufluro" in set_labels
+        fluorescence = "mufluor" in set_labels
         transmission = "mutrans" in set_labels
         emission = "mutey" in set_labels
 
@@ -90,7 +91,8 @@ def add_new_standard(session, file1, xs_input : XASStandardInput, additional_fil
     return new_standard
 
 
-def get_data(session, id):
+def get_filepath(session, id):
+
     standard = session.get(XASStandard, id)
     if not standard:
         raise HTTPException(status_code=404, detail=f"No standard with id={id}")
@@ -99,8 +101,32 @@ def get_data(session, id):
 
     if not standard_data:
         raise HTTPException(status_code=404, detail=f"No standard data for standard with id={id}")
+    
+    return standard_data.location
 
-    xdi_data = xdi.read_xdi(standard_data.location)
+
+def get_file(session, id):
+    xdi_location = get_filepath(session,id)
+    return FileResponse(xdi_location)
+
+
+def get_norm(energy,group,type):
+
+    if type in group:
+        r = group[type]
+        tr = set_xafsGroup(None)
+        tr.energy = energy
+        tr.mu = r
+        pre_edge(tr)
+        return tr.flat.tolist()
+
+    return []
+
+def get_data(session, id):
+
+    xdi_location = get_filepath(session, id)
+
+    xdi_data = xdi.read_xdi(xdi_location)
 
     if "energy" not in xdi_data:
         raise HTTPException(status_code=404, detail=f"No energy in file with id={id}")
@@ -109,18 +135,9 @@ def get_data(session, id):
         raise HTTPException(status_code=404, detail=f"No itrans in file with id={id}")
 
     e = xdi_data["energy"]
-    t = xdi_data["mutrans"]
-    r = xdi_data["murefer"]
 
-    tg = set_xafsGroup(None)
-    tg.energy = e
-    tg.mu = t
-    pre_edge(tg)
+    trans_out = get_norm(e,xdi_data,"mutrans")
+    fluor_out = get_norm(e,xdi_data,"mufluor")
+    ref_out = get_norm(e,xdi_data,"murefer")
 
-    tr = set_xafsGroup(None)
-    tr.energy = e
-    tr.mu = r
-    pre_edge(tr)
-
-
-    return {"energy": e.tolist(), "mutrans": tg.flat.tolist(), "murefer": tr.flat.tolist()}
+    return {"energy": e.tolist(), "mutrans": trans_out, "mufluor":fluor_out, "murefer": ref_out}

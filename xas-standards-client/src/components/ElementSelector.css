@@ -1,0 +1,22 @@
+.ptpop {
+  background-color: var(--diamond-100);
+  border: 1px solid var(--diamond-800);
+  z-index: 1000;
+}
+
+.elementselector {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.elementLabel {
+  font-weight: bold;
+  font-size: 28px;
+}
+
+#elementMain {
+  padding: 5px;
+  font-size: 20px;
+}

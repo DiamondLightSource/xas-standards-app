@@ -20,7 +20,11 @@ describe("Parse info from xdi file", () =>
       it("Check sample", () => {
         expect(xdi.sample?.name).toBe("Cu Formate");
         expect(xdi.sample?.prep).toBe("Pressed pellet");
-        expect(xdi.sample?.stoichiometry).toBe("C2 H2 Cu O4q");
+        expect(xdi.sample?.stoichiometry).toBe("C2 H2 Cu O4");
+      });
+
+      it("Check date", () => {
+        expect(xdi.date).toBe("2001-06-26T22:27:31");
       });
 
       it("Check columns valid", () => {

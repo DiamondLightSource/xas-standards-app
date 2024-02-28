@@ -2,63 +2,143 @@ import {
   LineVis,
   getDomain,
   Separator,
-  ScaleSelector,
+  Selector,
   Toolbar,
   GridToggler,
+  ScaleType,
+  CurveType,
+  ToggleBtn,
 } from "@h5web/lib";
 import "@h5web/lib/dist/styles.css";
 
 import "./StandardsChart.css";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import ndarray from "ndarray";
 import { XASData } from "../models";
 
-function XASChart(props: { xasdata: XASData | null }) {
-  if (props.xasdata === null || Object.keys(props.xasdata).length === 0) {
-    return (
-      <LineVis dataArray={ndarray([0])} domain={getDomain(ndarray([0]))} />
-    );
-  }
+function CurveOption(props: { option: CurveType }) {
+  const { option } = props;
 
-  const xdata = ndarray(props.xasdata.energy, [props.xasdata.energy.length]);
-  const ydata = ndarray(props.xasdata.mutrans, [props.xasdata.mutrans.length]);
+  return (
+    <div>
+      <span>{String(option)}</span>
+    </div>
+  );
+}
 
-  const ref = ndarray(props.xasdata.murefer, [props.xasdata.murefer.length]);
-  const domain = getDomain(ydata);
+function XASChart(props) {
+  const curveOptions: CurveType[] = Object.values(
+    CurveType
+  ) as Array<CurveType>;
 
   const [useGrid, setUseGrid] = useState(true);
+  const [curveOption, setCurveOption] = useState(curveOptions[0]);
 
-  const toggle = () => setUseGrid(!useGrid);
+  let xdata: ndarray.NdArray<number[]> = ndarray([0]);
+  let ydata: ndarray.NdArray<number[]> = ndarray([0]);
+
+  const aux = [];
+
+  let ydataLabel = "";
+
+  const hideAll = !props.showTrans && !props.showFluor && !props.showRef;
+
+  if (props.xasdata != null && !hideAll) {
+    xdata = ndarray(props.xasdata.energy, [props.xasdata.energy.length]);
+
+    let primaryFound = false;
+
+    if (props.showTrans) {
+      primaryFound = true;
+      ydata = ndarray(props.xasdata.mutrans, [props.xasdata.mutrans.length]);
+      ydataLabel = "Transmission";
+    }
+
+    if (props.showFluor) {
+      const fdata = ndarray(props.xasdata.mufluro, [
+        props.xasdata.mutrans.length,
+      ]);
+      if (!primaryFound) {
+        primaryFound = true;
+        ydata = fdata;
+        ydataLabel = "Fluorescence";
+      } else {
+        aux.push({ label: "Fluorescence", array: fdata });
+      }
+    }
+
+    if (props.showRef) {
+      const rdata = ndarray(props.xasdata.murefer, [
+        props.xasdata.murefer.length,
+      ]);
+      if (!primaryFound) {
+        primaryFound = true;
+        ydata = rdata;
+        ydataLabel = "Reference";
+      } else {
+        aux.push({ label: "Reference", array: rdata });
+      }
+    }
+  }
+
+  const domain = getDomain(ydata);
 
   return (
     <div className="chartbody">
       <div className="charttoolbar">
         <Toolbar>
           <Separator />
-          <ScaleSelector
-            label="X"
-            onScaleChange={function Ga() {}}
-            options={["linear", "log", "symlog"]}
-            value="linear"
+          <ToggleBtn
+            label="Transmission"
+            value={props.showTrans}
+            onToggle={() => {
+              console.log(!props.showTrans);
+              props.setShowTrans(!props.showTrans);
+            }}
+            disabled={!props.contains[0]}
           />
-          <ScaleSelector
-            label="Y"
-            onScaleChange={function Ga() {}}
-            options={["linear", "log", "symlog"]}
-            value="linear"
+          <ToggleBtn
+            label="Fluorescence"
+            value={props.showFluor}
+            onToggle={() => props.setShowFluor(!props.showFluor)}
+            disabled={!props.contains[1]}
+          />
+          <ToggleBtn
+            label="Reference"
+            value={props.showRef}
+            onToggle={() => props.setShowRef(!props.showRef)}
+            disabled={!props.contains[2]}
           />
           <Separator />
-          <GridToggler onToggle={toggle} />
+          <Selector<CurveType>
+            label="Line Style"
+            onChange={(o) => {
+              setCurveOption(o);
+            }}
+            options={curveOptions}
+            value={curveOption}
+            optionComponent={CurveOption}
+          />
+          <Separator />
+          <GridToggler onToggle={() => setUseGrid(!useGrid)} value={useGrid} />
         </Toolbar>
       </div>
       <div className="chartarea">
         <LineVis
-          abscissaParams={{ value: xdata.data }}
+          abscissaParams={{
+            value: xdata.data,
+            scaleType: ScaleType.Linear,
+            label: "Energy",
+          }}
           dataArray={ydata}
+          ordinateLabel={ydataLabel}
           domain={domain}
-          auxiliaries={[{ label: "Reference", array: ref }]}
+          showGrid={useGrid}
+          curveType={curveOption}
+          scaleType={ScaleType.SymLog}
+          auxiliaries={aux}
         />
       </div>
     </div>

@@ -11,10 +11,16 @@ export interface Edge {
 export interface XASData {
   energy: Array<number>;
   mutrans: Array<number>;
+  mufluor: Array<number>;
   murefer: Array<number>;
 }
 
 export interface Beamline {
+  name: string;
+  facility: Facility;
+}
+
+export interface Facility {
   name: string;
 }
 
@@ -24,7 +30,11 @@ export interface XASStandard {
   edge: Edge;
   sample_name: string;
   sample_prep: string;
+  sample_comp: string;
+  doi: string;
+  citation: string;
   facility: string;
+  collection_date: string;
   beamline: Beamline;
 }
 
@@ -32,3 +42,36 @@ export interface XASStandardInput {
   file1: File;
   licence: string;
 }
+
+
+
+const emptyElement: Element = {
+    symbol: "",
+    z: -1
+}
+
+const emptyEdge: Edge = {
+    name: "",
+    id: -1
+}
+
+const emptyBeamline: Beamline = {
+  name: "";
+  facility: "";
+}
+}
+    
+
+    const empty: XASStandard = {
+        id: -1,
+
+  edge: Edge;
+  sample_name: string;
+  sample_prep: string;
+  sample_comp: string;
+  doi: string;
+  citation: string;
+  facility: string;
+  collection_date: string;
+  beamline: Beamline;
+    }

@@ -11,12 +11,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@h5web/lib": "10.2.0-beta.2",
+    "@celadora/periodic-table": "^0.1.32",
+    "@h5web/lib": "11.0.0",
     "@types/ndarray": "^1.0.14",
     "axios": "^1.6.7",
     "ndarray": "^1.0.19",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-popper": "^2.3.0",
     "react-router-dom": "^6.21.3"
   },
   "devDependencies": {

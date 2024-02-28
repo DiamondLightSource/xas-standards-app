@@ -3,7 +3,7 @@ import datetime
 from contextlib import asynccontextmanager
 from typing import Annotated,List, Optional, Union
 
-from fastapi import Depends, FastAPI, Form, UploadFile, File
+from fastapi import Depends, FastAPI, Form, UploadFile, File, Query
 from fastapi.responses import HTMLResponse
 from fastapi_pagination import add_pagination
 from fastapi_pagination.cursor import CursorPage
@@ -12,7 +12,7 @@ from sqlmodel import Session, SQLModel, create_engine, select
 
 from fastapi.staticfiles import StaticFiles
 
-from .crud import (add_new_standard, get_data, get_standard, update_review, select_all,select_or_create_person)
+from .crud import (add_new_standard, get_data, get_standard, update_review, select_all,select_or_create_person, get_file)
 from .schemas import (
     Review,
     XASStandard,
@@ -50,6 +50,11 @@ def get_session():
 
 
 app = FastAPI(lifespan=lifespan)
+
+CursorPage = CursorPage.with_custom_options(
+    size=Query(10, ge=1, le=100),
+)
+
 
 add_pagination(app)
 
@@ -147,7 +152,13 @@ def submit_review(review: Review, session: Session = Depends(get_session)):
 
 
 @app.get("/api/data/{id}")
-async def read_data(id: int, session: Session = Depends(get_session)):
+async def read_data(id: int,
+                    format:  Optional[str] = "json",
+                    session: Session = Depends(get_session)):
+    
+    if format == "xdi":
+        return get_file(session,id)
+
     return get_data(session, id)
 
 

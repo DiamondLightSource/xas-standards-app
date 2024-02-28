@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useState } from "react";
 
 const crossref_url = "https://api.crossref.org/works/";
 const mailto = "?mailto=dataanalysis@diamond.ac.uk";
@@ -8,6 +9,8 @@ function CitationForm(props) {
   const setCitation = props.setCitation;
   const doi = props.doi;
   const setDOI = props.setDOI;
+
+  const [isValidDOI, setValidDOI] = useState(false);
 
   const validateDOI = () => {
     // prettier-ignore
@@ -20,10 +23,10 @@ function CitationForm(props) {
       axios
         .get(full_url)
         .then((res) => {
-          console.log("valid");
+          setValidDOI(true);
         })
         .catch((error) => {
-          console.log("not valid");
+          setValidDOI(false);
         });
     }
   };
@@ -50,6 +53,7 @@ function CitationForm(props) {
       <button type="button" onClick={validateDOI}>
         Validate DOI
       </button>
+      <div>{isValidDOI ? "Valid DOI" : "Invalid DOI"}</div>
     </fieldset>
   );
 }

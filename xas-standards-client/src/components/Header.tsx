@@ -13,6 +13,14 @@ export default function Header() {
               color: isActive ? "#CCCCCC" : "gray",
             })}
           >
+            <div className="headernavitem"> Home </div>
+          </NavLink>
+          <NavLink
+            to="/view"
+            style={({ isActive }) => ({
+              color: isActive ? "#CCCCCC" : "gray",
+            })}
+          >
             <div className="headernavitem"> View </div>
           </NavLink>
           <NavLink
@@ -21,7 +29,7 @@ export default function Header() {
           >
             <div className="headernavitem"> Submit </div>
           </NavLink>
-          <NavLink
+          {/* <NavLink
             to="/review"
             style={({ isActive }) => ({ color: isActive ? "#CCCCCC" : "gray" })}
           >
@@ -32,7 +40,7 @@ export default function Header() {
             style={({ isActive }) => ({ color: isActive ? "#CCCCCC" : "gray" })}
           >
             <div className="headernavitem"> Log in </div>
-          </NavLink>
+          </NavLink> */}
         </nav>
       </div>
     </div>

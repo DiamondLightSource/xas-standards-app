@@ -2,6 +2,7 @@ import { s } from "vitest/dist/reporters-1evA5lom.js";
 
 function InstrumentForm(props) {
   const beamlines = props.beamlines;
+  const beamlineHeader = props.beamlineHeader;
   const setBeamlineId = props.setBeamlineId;
   const beamlineId = props.beamlineId;
   const date = props.date;
@@ -23,6 +24,8 @@ function InstrumentForm(props) {
           </option>
         ))}
       </select>
+      <div>Beamline from Header:</div>
+      <div>{beamlineHeader}</div>
       <label htmlFor="date">Date Measured</label>
       <input
         type="datetime-local"

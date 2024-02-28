@@ -5,7 +5,7 @@ import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 
 describe("App", () => {
-  it("renders app", () => {
+  it("renders welcome page", () => {
     render(<App />, { wrapper: BrowserRouter });
   });
 });
