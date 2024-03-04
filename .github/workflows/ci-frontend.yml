@@ -1,9 +1,17 @@
-name: pnpm Example Workflow
+name: frontend ci
+
 on:
   push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
 jobs:
   build:
     runs-on: ubuntu-20.04
+    defaults:
+      run:
+        working-directory: ./xas-standards-client
     strategy:
       matrix:
         node-version: [15]
