@@ -30,18 +30,13 @@ dev = False
 lifespan = None
 
 
-if dev:
-    engine = create_engine(
-        "sqlite:///standards.db", connect_args={"check_same_thread": False}, echo=True
-    )
+url = os.environ.get("POSTGRESURL")
+build_dir = os.environ.get("FRONTEND_BUILD_DIR")
 
-    @asynccontextmanager
-    async def lifespan(app: FastAPI):
-        SQLModel.metadata.create_all(engine)
-        yield
-else:
-    url = os.environ.get("POSTGRESURL")
+if url:
     engine = create_engine(url)
+else:
+    print("URL not set - unit tests only")
 
 
 def get_session():
@@ -183,4 +178,6 @@ async def main():
     """
     return HTMLResponse(content=content)
 
-app.mount("/", StaticFiles(directory="/client/dist", html = True), name="site")
+
+if build_dir:
+    app.mount("/", StaticFiles(directory="/client/dist", html = True), name="site")
