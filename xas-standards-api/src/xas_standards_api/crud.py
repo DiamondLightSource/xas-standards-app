@@ -18,14 +18,17 @@ from .schemas import (
 
 pvc_location = "/scratch/xas-standards-pretend-pvc/"
 
+
 def get_beamline_names(session):
     results = session.exec(select(Beamline.name, Beamline.id)).all()
     return results
+
 
 def select_all(session, sql_model):
     statement = select(sql_model)
     results = session.exec(statement)
     return results.unique().all()
+
 
 def get_standard(session, id) -> XASStandard:
     standard = session.get(XASStandard, id)
@@ -43,6 +46,7 @@ def update_review(session, review):
     session.refresh(standard)
     return standard
 
+
 def select_or_create_person(session, identifier):
     p = PersonInput(identifier=identifier)
 
@@ -59,7 +63,7 @@ def select_or_create_person(session, identifier):
     return person
 
 
-def add_new_standard(session, file1, xs_input : XASStandardInput, additional_files):
+def add_new_standard(session, file1, xs_input: XASStandardInput, additional_files):
 
     tmp_filename = pvc_location + str(uuid.uuid4())
 
@@ -74,11 +78,13 @@ def add_new_standard(session, file1, xs_input : XASStandardInput, additional_fil
         transmission = "mutrans" in set_labels
         emission = "mutey" in set_labels
 
-        xsd = XASStandardDataInput(fluorescence=fluorescence,
-                                   location=tmp_filename,
-                                   original_filename=file1.filename,
-                                   emission=emission,
-                                   transmission=transmission)
+        xsd = XASStandardDataInput(
+            fluorescence=fluorescence,
+            location=tmp_filename,
+            original_filename=file1.filename,
+            emission=emission,
+            transmission=transmission,
+        )
 
     new_standard = XASStandard.model_validate(xs_input)
     new_standard.xas_standard_data = XASStandardData.model_validate(xsd)
@@ -98,18 +104,19 @@ def get_filepath(session, id):
     standard_data = session.get(XASStandardData, standard.data_id)
 
     if not standard_data:
-        raise HTTPException(status_code=404,
-                            detail=f"No standard data for standard with id={id}")
+        raise HTTPException(
+            status_code=404, detail=f"No standard data for standard with id={id}"
+        )
 
     return standard_data.location
 
 
 def get_file(session, id):
-    xdi_location = get_filepath(session,id)
+    xdi_location = get_filepath(session, id)
     return FileResponse(xdi_location)
 
 
-def get_norm(energy,group,type):
+def get_norm(energy, group, type):
 
     if type in group:
         r = group[type]
@@ -120,6 +127,7 @@ def get_norm(energy,group,type):
         return tr.flat.tolist()
 
     return []
+
 
 def get_data(session, id):
 
@@ -135,12 +143,13 @@ def get_data(session, id):
 
     e = xdi_data["energy"]
 
-    trans_out = get_norm(e,xdi_data,"mutrans")
-    fluor_out = get_norm(e,xdi_data,"mufluor")
-    ref_out = get_norm(e,xdi_data,"murefer")
+    trans_out = get_norm(e, xdi_data, "mutrans")
+    fluor_out = get_norm(e, xdi_data, "mufluor")
+    ref_out = get_norm(e, xdi_data, "murefer")
 
-    return {"energy": e.tolist(),
-            "mutrans": trans_out,
-            "mufluor":fluor_out,
-            "murefer": ref_out}
-
+    return {
+        "energy": e.tolist(),
+        "mutrans": trans_out,
+        "mufluor": fluor_out,
+        "murefer": ref_out,
+    }

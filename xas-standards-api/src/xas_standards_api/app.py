@@ -64,44 +64,53 @@ add_pagination(app)
 def read_licences(session: Session = Depends(get_session)) -> List[LicenceType]:
     return list(LicenceType)
 
+
 @app.get("/api/beamlines")
-def read_beamlines(session: Session = Depends(get_session))-> List[BeamlineResponse]:
-    bl = select_all(session,Beamline)
+def read_beamlines(session: Session = Depends(get_session)) -> List[BeamlineResponse]:
+    bl = select_all(session, Beamline)
     return bl
 
+
 @app.get("/api/elements")
-def read_elements(session: Session = Depends(get_session))-> List[Element]:
+def read_elements(session: Session = Depends(get_session)) -> List[Element]:
     e = select_all(session, Element)
     return e
 
+
 @app.get("/api/edges")
-def read_edges(session: Session = Depends(get_session))-> List[Edge]:
+def read_edges(session: Session = Depends(get_session)) -> List[Edge]:
     e = select_all(session, Edge)
     return e
 
+
 @app.get("/api/standards")
-def read_standards(session: Session = Depends(get_session), 
-                   element: str | None = None,
-                   admin: bool = False,
-                   response_model=Union[XASStandardResponse,
-                                        XASStandardAdminResponse]
-                    ) -> CursorPage[XASStandardAdminResponse | XASStandardResponse]:
+def read_standards(
+    session: Session = Depends(get_session),
+    element: str | None = None,
+    admin: bool = False,
+    response_model=Union[XASStandardResponse, XASStandardAdminResponse],
+) -> CursorPage[XASStandardAdminResponse | XASStandardResponse]:
 
     statement = select(XASStandard)
 
     if element:
-        statement = statement.join(Element, XASStandard.element_z==Element.z
-                                   ).where(Element.symbol == element)
+        statement = statement.join(Element, XASStandard.element_z == Element.z).where(
+            Element.symbol == element
+        )
 
     if admin:
+
         def transformer(x):
             return [XASStandardAdminResponse.model_validate(i) for i in x]
+
     else:
+
         def transformer(x):
             return [XASStandardResponse.model_validate(i) for i in x]
 
-    return paginate(session, statement.order_by(XASStandard.id),
-                     transformer=transformer)
+    return paginate(
+        session, statement.order_by(XASStandard.id), transformer=transformer
+    )
 
 
 @app.get("/api/standards/{id}")
@@ -114,19 +123,19 @@ async def read_standard(
 @app.post("/api/standards")
 def add_standard_file(
     xdi_file: UploadFile,
-    element_id:  Annotated[str, Form()],
-    edge_id:  Annotated[str, Form()],
-    beamline_id:  Annotated[int, Form()],
-    sample_name:  Annotated[str, Form()],
+    element_id: Annotated[str, Form()],
+    edge_id: Annotated[str, Form()],
+    beamline_id: Annotated[int, Form()],
+    sample_name: Annotated[str, Form()],
     sample_prep: Annotated[str, Form()],
     doi: Annotated[str, Form()],
     citation: Annotated[str, Form()],
     comments: Annotated[str, Form()],
     date: Annotated[str, Form()],
-    licence:  Annotated[str, Form()],
-    additional_files: Optional[list[UploadFile]]= Form(None),
-    sample_comp:  Optional[str] = Form(None),
-    session: Session = Depends(get_session)
+    licence: Annotated[str, Form()],
+    additional_files: Optional[list[UploadFile]] = Form(None),
+    sample_comp: Optional[str] = Form(None),
+    session: Session = Depends(get_session),
 ) -> XASStandard:
 
     if additional_files:
@@ -134,19 +143,21 @@ def add_standard_file(
 
     person = select_or_create_person(session, "test1234")
 
-    form_input = XASStandardInput(submitter_id=person.id,
-                                      beamline_id=beamline_id,
-                                      doi=doi,
-                                      element_z=element_id,
-                                      edge_id=edge_id,
-                                      sample_name=sample_name,
-                                      sample_prep=sample_prep,
-                                      submitter_comments= comments,
-                                      citation=citation,
-                                      licence=licence,
-                                      collection_date=date,
-                                      submission_date=datetime.datetime.now(),
-                                      sample_comp=sample_comp)
+    form_input = XASStandardInput(
+        submitter_id=person.id,
+        beamline_id=beamline_id,
+        doi=doi,
+        element_z=element_id,
+        edge_id=edge_id,
+        sample_name=sample_name,
+        sample_prep=sample_prep,
+        submitter_comments=comments,
+        citation=citation,
+        licence=licence,
+        collection_date=date,
+        submission_date=datetime.datetime.now(),
+        sample_comp=sample_comp,
+    )
 
     return add_new_standard(session, xdi_file, form_input, additional_files)
 
@@ -157,12 +168,12 @@ def submit_review(review: Review, session: Session = Depends(get_session)):
 
 
 @app.get("/api/data/{id}")
-async def read_data(id: int,
-                    format:  Optional[str] = "json",
-                    session: Session = Depends(get_session)):
+async def read_data(
+    id: int, format: Optional[str] = "json", session: Session = Depends(get_session)
+):
 
     if format == "xdi":
-        return get_file(session,id)
+        return get_file(session, id)
 
     return get_data(session, id)
 
@@ -190,5 +201,4 @@ async def main():
 
 
 if build_dir:
-    app.mount("/", StaticFiles(directory="/client/dist", html = True),
-               name="site")
+    app.mount("/", StaticFiles(directory="/client/dist", html=True), name="site")
