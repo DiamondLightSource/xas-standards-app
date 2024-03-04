@@ -1,0 +1,45 @@
+.standards-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+#standards {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  align-items: stretch;
+}
+
+#standards td,
+#standards th {
+  border: 1px solid #ddd;
+  padding: 4px;
+}
+
+#standards .activeclicked {
+  background-color: var(--diamond-400);
+}
+
+#standards tr {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#standards tr:nth-child(even):not(.activeclicked) {
+  background-color: #f2f2f2;
+}
+
+#standards tr:not(.activeclicked):hover {
+  background-color: #ddd;
+}
+
+#standards th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: var(--diamond-800);
+  color: var(--diamond-500);
+}

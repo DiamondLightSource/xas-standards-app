@@ -1,0 +1,35 @@
+.header {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--diamond-700);
+  color: var(--diamond-100);
+}
+
+.headerbuttons {
+  display: flex;
+  flex-direction: row;
+}
+
+.headerstart {
+  align-self: stretch;
+}
+
+.headerend {
+  align-items: center;
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+.headernavitem {
+  border-style: solid;
+  margin: auto;
+  padding: 5px;
+  color: var(--diamond-75);
+}
