@@ -14,6 +14,10 @@ inputs:
     description: Python version to install
     default: "3.x"
 
+ defaults:
+   run:
+     working-directory: ./xas-standards-api
+
 runs:
   using: composite
 

@@ -10,7 +10,7 @@ env:
 
 defaults:
   run:
-    working-directory: xas-standards-api
+    working-directory: ./xas-standards-api
 
 jobs:
   lint:
