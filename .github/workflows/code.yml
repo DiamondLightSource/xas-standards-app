@@ -17,6 +17,9 @@ jobs:
     # pull requests are a duplicate of a branch push if within the same repo.
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./xas-standards-api
 
     steps:
       - name: Checkout
@@ -31,7 +34,7 @@ jobs:
 
       - name: Lint
         working-directory: xas-standards-api
-        run: tox -e pre-commit,mypy ./xas-standards-api
+        run: tox -e pre-commit,mypy
 
   test:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
@@ -48,6 +51,9 @@ jobs:
             install: ".[dev]"
 
     runs-on: ${{ matrix.os }}
+    defaults:
+       run:
+         working-directory: ./xas-standards-api
     env:
       # https://github.com/pytest-dev/pytest/issues/2042
       PY_IGNORE_IMPORTMISMATCH: "1"
