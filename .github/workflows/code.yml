@@ -24,8 +24,8 @@ jobs:
 
       - name: Install python packages
         uses: ./.github/actions/install_requirements
-        working-directory: xas-standards-api
         with:
+          working-directory: xas-standards-api
           requirements_file: requirements-dev-3.x.txt
           install_options: -e .[dev]
           artifact_name: lint
