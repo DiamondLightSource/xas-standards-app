@@ -23,7 +23,8 @@
                 "ms-python.python",
                 "tamasfe.even-better-toml",
                 "redhat.vscode-yaml",
-                "ryanluker.vscode-coverage-gutters"
+                "ryanluker.vscode-coverage-gutters",
+                "charliermarsh.ruff"
             ]
         }
     },
@@ -39,9 +40,6 @@
         // map in home directory - not strictly necessary but useful
         "source=${localEnv:HOME},target=${localEnv:HOME},type=bind,consistency=cached"
     ],
-    // make the workspace folder the same inside and outside of the container
-    "workspaceMount": "source=${localWorkspaceFolder},target=${localWorkspaceFolder},type=bind",
-    "workspaceFolder": "${localWorkspaceFolder}",
     // After the container is created, install the python project in editable form
     "postCreateCommand": "pip install -e '.[dev]'"
 }

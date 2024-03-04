@@ -1,37 +1,35 @@
-import numpy as np 
 import h5py
+import numpy as np
 
-#Example
+# Example
 
-	# XDI/1.0 GSE/1.0
-	# Column.1: energy eV
-	# Column.2: i0
-	# Column.3: itrans
-	# Column.4: mutrans
-	# Element.edge: K
-	# Element.symbol: Cu
-	# Scan.edge_energy: 8980.0
-	# Mono.name: Si 111
-	# Mono.d_spacing: 3.13553
-	# Beamline.name: 13ID
-	# Beamline.collimation: none
-	# Beamline.focusing: yes
-	# Beamline.harmonic_rejection: rhodium-coated mirror
-	# Facility.name: APS
-	# Facility.energy: 7.00 GeV
-	# Facility.xray_source: APS Undulator A
-	# Scan.start_time: 2001-06-26T22:27:31
-	# Detector.I0: 10cm  N2
-	# Detector.I1: 10cm  N2
-	# Sample.name: Cu
-	# Sample.prep: Cu metal foil
-	# GSE.EXTRA:  config 1
-	# ///
-	# Cu foil Room Temperature
-	# measured at beamline 13-ID
-	#----
-
-
+# XDI/1.0 GSE/1.0
+# Column.1: energy eV
+# Column.2: i0
+# Column.3: itrans
+# Column.4: mutrans
+# Element.edge: K
+# Element.symbol: Cu
+# Scan.edge_energy: 8980.0
+# Mono.name: Si 111
+# Mono.d_spacing: 3.13553
+# Beamline.name: 13ID
+# Beamline.collimation: none
+# Beamline.focusing: yes
+# Beamline.harmonic_rejection: rhodium-coated mirror
+# Facility.name: APS
+# Facility.energy: 7.00 GeV
+# Facility.xray_source: APS Undulator A
+# Scan.start_time: 2001-06-26T22:27:31
+# Detector.I0: 10cm  N2
+# Detector.I1: 10cm  N2
+# Sample.name: Cu
+# Sample.prep: Cu metal foil
+# GSE.EXTRA:  config 1
+# ///
+# Cu foil Room Temperature
+# measured at beamline 13-ID
+# ----
 
 
 def main():
@@ -55,7 +53,7 @@ def main():
     facility = "Facility.name: DLS"
     xray = "Facility.xray_source: DLS Bending Magnet B18"
     start = "Scan.start_time: 2001-06-26T22:27:31"
-    name =  "Sample.name: Cu Formate"
+    name = "Sample.name: Cu Formate"
     prep = "Sample.prep: Pressed pellet"
     stoich = "Sample.stoichiometry: C2 H2 Cu O4"
 
@@ -69,7 +67,7 @@ def main():
     column5 = "Column.5: i0"
     column6 = "Column.6: irefer"
 
-    with h5py.File("163245_Cu_formate_1.nxs") as fh, open("test.xdi",'w') as xdi:
+    with h5py.File("163245_Cu_formate_1.nxs") as fh, open("test.xdi", "w") as xdi:
         xdi.write(header_symbol + version + lf)
 
         xdi.write(header_symbol + column1 + lf)
@@ -84,12 +82,11 @@ def main():
         xdi.write(header_symbol + beamline + lf)
         xdi.write(header_symbol + facility + lf)
         xdi.write(header_symbol + xray + lf)
-        
+
         xdi.write(header_symbol + start + lf)
         xdi.write(header_symbol + name + lf)
         xdi.write(header_symbol + prep + lf)
         xdi.write(header_symbol + stoich + lf)
-        
 
         xdi.write(header_symbol + field_end + lf)
         xdi.write(header_symbol + comment1 + lf)
@@ -107,10 +104,7 @@ def main():
         datasets.append(fh[irp][...])
 
         all = np.vstack(datasets)
-        np.savetxt(xdi,all.T)
-        
-
-        
+        np.savetxt(xdi, all.T)
 
 
 if __name__ == "__main__":
