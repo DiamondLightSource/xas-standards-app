@@ -1,29 +1,35 @@
-import os
 import datetime
-from contextlib import asynccontextmanager
-from typing import Annotated,List, Optional, Union
+import os
+from typing import Annotated, List, Optional, Union
 
-from fastapi import Depends, FastAPI, Form, UploadFile, File, Query
+from fastapi import Depends, FastAPI, File, Form, Query, UploadFile
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi_pagination import add_pagination
 from fastapi_pagination.cursor import CursorPage
 from fastapi_pagination.ext.sqlalchemy import paginate
-from sqlmodel import Session, SQLModel, create_engine, select
+from sqlmodel import Session, create_engine, select
 
-from fastapi.staticfiles import StaticFiles
-
-from .crud import (add_new_standard, get_data, get_standard, update_review, select_all,select_or_create_person, get_file)
+from .crud import (
+    add_new_standard,
+    get_data,
+    get_file,
+    get_standard,
+    select_all,
+    select_or_create_person,
+    update_review,
+)
 from .schemas import (
-    Review,
-    XASStandard,
-    Element,
-    Edge,
     Beamline,
     BeamlineResponse,
-    XASStandardResponse,
+    Edge,
+    Element,
+    LicenceType,
+    Review,
+    XASStandard,
     XASStandardAdminResponse,
     XASStandardInput,
-    LicenceType
+    XASStandardResponse,
 )
 
 dev = False
@@ -54,21 +60,21 @@ CursorPage = CursorPage.with_custom_options(
 add_pagination(app)
 
 
-@app.get("/api/licences") 
+@app.get("/api/licences")
 def read_licences(session: Session = Depends(get_session)) -> List[LicenceType]:
     return list(LicenceType)
 
-@app.get("/api/beamlines") 
+@app.get("/api/beamlines")
 def read_beamlines(session: Session = Depends(get_session))-> List[BeamlineResponse]:
     bl = select_all(session,Beamline)
     return bl
 
-@app.get("/api/elements") 
+@app.get("/api/elements")
 def read_elements(session: Session = Depends(get_session))-> List[Element]:
     e = select_all(session, Element)
     return e
 
-@app.get("/api/edges") 
+@app.get("/api/edges")
 def read_edges(session: Session = Depends(get_session))-> List[Edge]:
     e = select_all(session, Edge)
     return e
@@ -77,21 +83,25 @@ def read_edges(session: Session = Depends(get_session))-> List[Edge]:
 def read_standards(session: Session = Depends(get_session), 
                    element: str | None = None,
                    admin: bool = False,
-                   response_model=Union[XASStandardResponse, XASStandardAdminResponse]) -> CursorPage[XASStandardAdminResponse | XASStandardResponse]:
-    
-    #CHECK HEADER FOR ADMIN QUERY
+                   response_model=Union[XASStandardResponse,
+                                        XASStandardAdminResponse]
+                    ) -> CursorPage[XASStandardAdminResponse | XASStandardResponse]:
 
     statement = select(XASStandard)
 
     if element:
-        statement = statement.join(Element, XASStandard.element_z==Element.z).where(Element.symbol == element)
+        statement = statement.join(Element, XASStandard.element_z==Element.z
+                                   ).where(Element.symbol == element)
 
     if admin:
-        transformer = lambda x: [XASStandardAdminResponse.model_validate(i) for i in x]
+        def transformer(x):
+            return [XASStandardAdminResponse.model_validate(i) for i in x]
     else:
-        transformer = lambda x: [XASStandardResponse.model_validate(i) for i in x]
+        def transformer(x):
+            return [XASStandardResponse.model_validate(i) for i in x]
 
-    return paginate(session, statement.order_by(XASStandard.id), transformer=transformer)
+    return paginate(session, statement.order_by(XASStandard.id),
+                     transformer=transformer)
 
 
 @app.get("/api/standards/{id}")
@@ -118,7 +128,7 @@ def add_standard_file(
     sample_comp:  Optional[str] = Form(None),
     session: Session = Depends(get_session)
 ) -> XASStandard:
-    
+
     if additional_files:
         print(f"Additional files {len(additional_files)}")
 
@@ -150,7 +160,7 @@ def submit_review(review: Review, session: Session = Depends(get_session)):
 async def read_data(id: int,
                     format:  Optional[str] = "json",
                     session: Session = Depends(get_session)):
-    
+
     if format == "xdi":
         return get_file(session,id)
 
@@ -180,4 +190,5 @@ async def main():
 
 
 if build_dir:
-    app.mount("/", StaticFiles(directory="/client/dist", html = True), name="site")
+    app.mount("/", StaticFiles(directory="/client/dist", html = True),
+               name="site")

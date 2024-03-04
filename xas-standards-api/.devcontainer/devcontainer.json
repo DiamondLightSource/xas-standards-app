@@ -23,7 +23,8 @@
                 "ms-python.python",
                 "tamasfe.even-better-toml",
                 "redhat.vscode-yaml",
-                "ryanluker.vscode-coverage-gutters"
+                "ryanluker.vscode-coverage-gutters",
+                "charliermarsh.ruff"
             ]
         }
     },

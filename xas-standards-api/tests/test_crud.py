@@ -1,11 +1,11 @@
+from unittest.mock import Mock, call, create_autospec
+
+import pytest
 from sqlmodel import Session
 
-from unittest.mock import call, create_autospec, Mock
-import pytest
-
+from xas_standards_api import crud
 from xas_standards_api.schemas import XASStandard
 
-from xas_standards_api import crud
 
 def test_get_standard():
 

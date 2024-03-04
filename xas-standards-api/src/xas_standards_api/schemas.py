@@ -1,10 +1,9 @@
-from typing import Optional, List
-from pydantic import BaseModel
-from sqlmodel import Field, SQLModel, Enum, Column, Relationship
-
 import datetime
-
 import enum
+from typing import List, Optional
+
+from pydantic import BaseModel
+from sqlmodel import Column, Enum, Field, Relationship, SQLModel
 
 
 class Review(BaseModel):
@@ -55,7 +54,9 @@ class Facility(SQLModel, table=True):
     region: str
     country: str
 
-    beamlines: List["Beamline"] = Relationship(back_populates="facility", sa_relationship_kwargs={"lazy": "joined"})
+    beamlines: List["Beamline"] = Relationship(back_populates="facility",
+                                               sa_relationship_kwargs={"lazy":
+                                                                       "joined"})
 
 class Beamline(SQLModel, table=True):
     __tablename__: str = "beamline"
@@ -66,7 +67,8 @@ class Beamline(SQLModel, table=True):
     xray_source: str | None
     facility_id: int = Field(foreign_key="facility.id")
 
-    facility: Facility = Relationship(back_populates="beamlines", sa_relationship_kwargs={"lazy": "joined"})
+    facility: Facility = Relationship(back_populates="beamlines",
+                                      sa_relationship_kwargs={"lazy": "joined"})
 
 
 class FacilityResponse(SQLModel):
@@ -129,7 +131,8 @@ class XASStandard(XASStandardInput, table=True):
     data_id: int | None = Field(foreign_key="xas_standard_data.id", default=None)
     reviewer_id: Optional[int] = Field(foreign_key="person.id", default=None)
     reviewer_comments: Optional[str] = None
-    review_status: Optional[ReviewStatus] = Field(sa_column=Column(Enum(ReviewStatus)), default=ReviewStatus.pending)
+    review_status: Optional[ReviewStatus] = Field(sa_column=Column(Enum(ReviewStatus)),
+                                                  default=ReviewStatus.pending)
 
     xas_standard_data: XASStandardData = Relationship(back_populates="xas_standard")
     element: Element = Relationship(sa_relationship_kwargs={"lazy": "joined"})
@@ -137,11 +140,11 @@ class XASStandard(XASStandardInput, table=True):
     beamline: Beamline = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
 
 class XASStandardResponse(XASStandardInput):
-    id : int | None 
+    id : int | None
     element: ElementInput
     edge: EdgeInput
     beamline: BeamlineResponse
-    submitter_id: int 
+    submitter_id: int
 
 
 class XASStandardAdminResponse(XASStandardResponse):

@@ -1,12 +1,10 @@
-import os
 import uuid
 
 from fastapi import HTTPException
 from fastapi.responses import FileResponse
 from larch.io import xdi
+from larch.xafs import pre_edge, set_xafsGroup
 from sqlmodel import select
-
-from larch.xafs import pre_edge,set_xafsGroup
 
 from .schemas import (
     Beamline,
@@ -14,14 +12,14 @@ from .schemas import (
     PersonInput,
     XASStandard,
     XASStandardData,
+    XASStandardDataInput,
     XASStandardInput,
-    XASStandardDataInput
 )
 
 pvc_location = "/scratch/xas-standards-pretend-pvc/"
 
 def get_beamline_names(session):
-    results = session.exec(select(Beamline.name, Beamline.id)).all();
+    results = session.exec(select(Beamline.name, Beamline.id)).all()
     return results
 
 def select_all(session, sql_model):
@@ -52,7 +50,7 @@ def select_or_create_person(session, identifier):
     person = session.exec(statement).first()
 
     if person is None:
-        new_person = Person.from_orm(p)
+        new_person = Person.model_validate(p)
         session.add(new_person)
         session.commit()
         session.refresh(new_person)
@@ -96,12 +94,13 @@ def get_filepath(session, id):
     standard = session.get(XASStandard, id)
     if not standard:
         raise HTTPException(status_code=404, detail=f"No standard with id={id}")
-    
+
     standard_data = session.get(XASStandardData, standard.data_id)
 
     if not standard_data:
-        raise HTTPException(status_code=404, detail=f"No standard data for standard with id={id}")
-    
+        raise HTTPException(status_code=404,
+                            detail=f"No standard data for standard with id={id}")
+
     return standard_data.location
 
 
@@ -130,7 +129,7 @@ def get_data(session, id):
 
     if "energy" not in xdi_data:
         raise HTTPException(status_code=404, detail=f"No energy in file with id={id}")
-    
+
     if "mutrans" not in xdi_data and "":
         raise HTTPException(status_code=404, detail=f"No itrans in file with id={id}")
 
@@ -140,4 +139,8 @@ def get_data(session, id):
     fluor_out = get_norm(e,xdi_data,"mufluor")
     ref_out = get_norm(e,xdi_data,"murefer")
 
-    return {"energy": e.tolist(), "mutrans": trans_out, "mufluor":fluor_out, "murefer": ref_out}
+    return {"energy": e.tolist(),
+            "mutrans": trans_out,
+            "mufluor":fluor_out,
+            "murefer": ref_out}
+
