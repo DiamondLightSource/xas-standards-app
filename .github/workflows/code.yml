@@ -25,14 +25,13 @@ jobs:
       - name: Install python packages
         uses: ./.github/actions/install_requirements
         with:
-          working-directory: xas-standards-api
           requirements_file: requirements-dev-3.x.txt
           install_options: -e .[dev]
           artifact_name: lint
 
       - name: Lint
         working-directory: xas-standards-api
-        run: tox -e pre-commit,mypy
+        run: tox -e pre-commit,mypy ./xas-standards-api
 
   test:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
