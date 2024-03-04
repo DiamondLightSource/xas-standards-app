@@ -183,4 +183,4 @@ async def main():
     """
     return HTMLResponse(content=content)
 
-# app.mount("/", StaticFiles(directory="/client/dist", html = True), name="site")
+app.mount("/", StaticFiles(directory="/client/dist", html = True), name="site")

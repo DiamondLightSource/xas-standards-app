@@ -47,4 +47,4 @@ RUN apt-get update && apt-get install libpq5 -y
 EXPOSE 5000
 
 # change this entrypoint if it is not the same as the repo
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["xas-standards-api"]
