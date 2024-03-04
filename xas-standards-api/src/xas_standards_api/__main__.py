@@ -1,8 +1,8 @@
 from argparse import ArgumentParser
 
-from . import __version__
-
 import uvicorn
+
+from . import __version__
 
 __all__ = ["main"]
 
