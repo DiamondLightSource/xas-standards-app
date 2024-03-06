@@ -11,11 +11,9 @@ describe("App", () => {
   vi.mocked(axios.get).mockImplementation((url) => {
     switch (url) {
       case "/api/beamlines":
-        return Promise.resolve({ data: { name: "Bob", items: [] } });
-      case "/items.json":
-        return Promise.resolve({ data: [{ id: 1 }, { id: 2 }] });
+        return Promise.resolve({});
       default:
-        return Promise.resolve({ data: [{ name: "Bob", items: [] }] });
+        return Promise.resolve({});
     }
   });
 
