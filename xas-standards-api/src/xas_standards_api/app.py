@@ -14,6 +14,7 @@ from .crud import (
     add_new_standard,
     get_data,
     get_file,
+    get_metadata,
     get_standard,
     select_all,
     select_or_create_person,
@@ -25,6 +26,7 @@ from .schemas import (
     Edge,
     Element,
     LicenceType,
+    MetadataResponse,
     Review,
     XASStandard,
     XASStandardAdminResponse,
@@ -58,6 +60,11 @@ CursorPage = CursorPage.with_custom_options(
 
 
 add_pagination(app)
+
+
+@app.get("/api/metadata")
+def read_metadata(session: Session = Depends(get_session)) -> MetadataResponse:
+    return get_metadata(session)
 
 
 @app.get("/api/licences")

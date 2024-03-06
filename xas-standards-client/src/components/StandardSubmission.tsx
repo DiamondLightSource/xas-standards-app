@@ -1,4 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useContext } from "react";
+
+import { MetadataContext } from "../contexts/MetadataContext";
 
 import axios from "axios";
 import { AxiosResponse, AxiosError } from "axios";
@@ -12,17 +14,13 @@ import InstrumentForm from "./InstrumentForm";
 import CitationForm from "./CitationForm";
 import AdditionalInformationForm from "./AdditionalInfoForm";
 
-import { Edge, Element } from "../models";
-
 import { useNavigate } from "react-router-dom";
 
 const standards_url = "/api/standards";
-const beamlines_url = "/api/beamlines";
-const elements_url = "/api/elements";
-const edges_url = "/api/edges";
-const licences_url = "/api/licences";
 
 function StandardSubmission() {
+  const { elements, edges, beamlines, licences } = useContext(MetadataContext);
+
   const [file, setFile] = useState<File>();
   const [file2, setFile2] = useState<FileList>();
 
@@ -39,31 +37,7 @@ function StandardSubmission() {
   const [citation, setCitation] = useState("");
   const [comments, setComments] = useState("");
 
-  const [beamlines, setBeamlines] = useState([]);
-  const [elements, setElements] = useState<Element[]>([]);
-  const [edges, setEdges] = useState<Edge[]>([]);
-  const [licences, setLicences] = useState([]);
-
   const navigate = useNavigate();
-
-  useEffect(() => {
-    axios.get(beamlines_url).then((res) => {
-      setBeamlines(res.data);
-    });
-
-    axios.get(elements_url).then((res) => {
-      setElements(res.data);
-    });
-
-    axios.get(edges_url).then((res) => {
-      setEdges(res.data);
-    });
-
-    axios.get(licences_url).then((res) => {
-      setLicences(res.data);
-      setLicence(res.data[0]);
-    });
-  }, []);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

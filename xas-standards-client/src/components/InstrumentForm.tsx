@@ -1,5 +1,3 @@
-import { s } from "vitest/dist/reporters-1evA5lom.js";
-
 function InstrumentForm(props) {
   const beamlines = props.beamlines;
   const beamlineHeader = props.beamlineHeader;

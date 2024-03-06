@@ -5,7 +5,7 @@ import XDIFile from "./xdifile";
 
 describe("Parse info from xdi file", () =>
   new Promise((done) => {
-    fs.readFile("test.xdi", "utf8", (err, data) => {
+    fs.readFile("test.xdi", "utf8", (err: any, data: string) => {
       if (err) throw err;
       const xdi = XDIFile.parseFile(data);
 

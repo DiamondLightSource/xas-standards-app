@@ -96,6 +96,13 @@ class BeamlineResponse(SQLModel):
     facility: FacilityResponse
 
 
+class MetadataResponse(SQLModel):
+    beamlines: List[BeamlineResponse]
+    elements: List[Element]
+    edges: List[Edge]
+    licences: List[str]
+
+
 class XASStandardDataInput(SQLModel):
     original_filename: str
     transmission: bool
