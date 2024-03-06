@@ -8,6 +8,9 @@ from sqlmodel import select
 
 from .schemas import (
     Beamline,
+    Edge,
+    Element,
+    LicenceType,
     Person,
     PersonInput,
     XASStandard,
@@ -28,6 +31,16 @@ def select_all(session, sql_model):
     statement = select(sql_model)
     results = session.exec(statement)
     return results.unique().all()
+
+
+def get_metadata(session):
+    output = {}
+    output["elements"] = select_all(session, Element)
+    output["edges"] = select_all(session, Edge)
+    output["beamlines"] = select_all(session, Beamline)
+    output["licences"] = list(LicenceType)
+
+    return output
 
 
 def get_standard(session, id) -> XASStandard:

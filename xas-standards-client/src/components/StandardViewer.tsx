@@ -1,24 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState, useContext } from "react";
 
 import XASChart from "./StandardsChart.tsx";
 import axios from "axios";
 import StandardsTable from "./StandardsTable.tsx";
-import { Element } from "../models.ts";
 
 import { XASStandard, XASData } from "../models.ts";
+import { MetadataContext } from "../contexts/MetadataContext.tsx";
 
 const data_url = "/api/data";
-const elements_url = "/api/elements";
 
 function StandardViewer() {
   const [standards, setStandardsList] = useState<XASStandard[]>([]);
 
   const [xasdata, setXASData] = useState<XASData | null>(null);
-  const [elements, setElements] = useState<Element[]>([]);
   const [showTrans, setShowTrans] = useState(false);
   const [showFluor, setShowFluor] = useState(false);
   const [showRef, setShowRef] = useState(false);
   const [contains, setContains] = useState([false, false, false]);
+
+  const { elements } = useContext(MetadataContext);
 
   function getData(setXASData: React.Dispatch<XASData>) {
     return (id: number) => {
@@ -39,12 +39,6 @@ function StandardViewer() {
   }
 
   const onClick = getData(setXASData);
-
-  useEffect(() => {
-    axios.get(elements_url).then((res) => {
-      setElements(res.data);
-    });
-  }, []);
 
   return (
     <div className="mainbody">

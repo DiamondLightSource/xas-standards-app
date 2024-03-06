@@ -43,35 +43,9 @@ export interface XASStandardInput {
   licence: string;
 }
 
-
-
-const emptyElement: Element = {
-    symbol: "",
-    z: -1
+export interface AppMetadata {
+  beamlines: Beamline[];
+  elements: Element[];
+  edges: Edge[];
+  licences: string[];
 }
-
-const emptyEdge: Edge = {
-    name: "",
-    id: -1
-}
-
-const emptyBeamline: Beamline = {
-  name: "";
-  facility: "";
-}
-}
-    
-
-    const empty: XASStandard = {
-        id: -1,
-
-  edge: Edge;
-  sample_name: string;
-  sample_prep: string;
-  sample_comp: string;
-  doi: string;
-  citation: string;
-  facility: string;
-  collection_date: string;
-  beamline: Beamline;
-    }
