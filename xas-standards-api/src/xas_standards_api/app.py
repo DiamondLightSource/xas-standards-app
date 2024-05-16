@@ -10,8 +10,6 @@ from fastapi import (
     Form,
     HTTPException,
     Query,
-    Request,
-    Security,
     UploadFile,
     status,
 )
@@ -52,7 +50,7 @@ dev = False
 
 env_value = os.environ.get("FASTAPI_APP_ENV")
 
-if (env_value and env_value == "development"):
+if env_value and env_value == "development":
     print("RUNNING IN DEV MODE")
     dev = True
 
@@ -82,14 +80,16 @@ CursorPage = CursorPage.with_custom_options(
 
 add_pagination(app)
 
+
 @app.get("/login", response_class=RedirectResponse)
 async def redirect_home():
-    #proxy handles log in so if you reach here go home
+    # proxy handles log in so if you reach here go home
     return "/"
 
 
-async def get_current_user(auth: HTTPAuthorizationCredentials =
-                           Depends(get_bearer_token)):
+async def get_current_user(
+    auth: HTTPAuthorizationCredentials = Depends(get_bearer_token),
+):
 
     if auth is None:
         raise HTTPException(
@@ -106,7 +106,8 @@ async def get_current_user(auth: HTTPAuthorizationCredentials =
             detail="User info endpoint error",
         )
 
-    response = requests.get(url=oidc_user_info_endpoint,
+    response = requests.get(
+        url=oidc_user_info_endpoint,
         headers={"Authorization": f"Bearer {auth.credentials}"},
     )
 
@@ -119,10 +120,9 @@ async def get_current_user(auth: HTTPAuthorizationCredentials =
     return response.json()["id"]
 
 
-
 @app.get("/api/user")
 async def check(user_id: str = Depends(get_current_user)):
-    return {"user" : user_id}
+    return {"user": user_id}
 
 
 @app.get("/api/metadata")
