@@ -14,6 +14,8 @@ import InstrumentForm from "./InstrumentForm";
 import CitationForm from "./CitationForm";
 import AdditionalInformationForm from "./AdditionalInfoForm";
 
+import { UserContext } from "../contexts/UserContext";
+
 import { useNavigate } from "react-router-dom";
 
 const standards_url = "/api/standards";
@@ -33,9 +35,11 @@ function StandardSubmission() {
   const [beamlineHeader, setBeamlineHeader] = useState("");
   const [doi, setDOI] = useState("");
   const [date, setDate] = useState("");
-  const [licence, setLicence] = useState("");
+  const [licence, setLicence] = useState(licences[0]);
   const [citation, setCitation] = useState("");
   const [comments, setComments] = useState("");
+
+  const { user } = useContext(UserContext);
 
   const navigate = useNavigate();
 
