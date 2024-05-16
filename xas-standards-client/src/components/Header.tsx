@@ -1,7 +1,13 @@
 import "./Header.css";
 import { NavLink } from "react-router-dom";
+import { useContext } from "react";
+import { UserContext } from "../contexts/UserContext";
 
 export default function Header() {
+  const user = useContext(UserContext);
+  console.log(user);
+  const loggedIn = user != null;
+
   return (
     <div className="header">
       <h2 className="headerstart">XAS Standards</h2>
@@ -15,6 +21,16 @@ export default function Header() {
           >
             <div className="headernavitem"> Home </div>
           </NavLink>
+          {loggedIn ? null : (
+            <NavLink
+              to="/login"
+              style={({ isActive }) => ({
+                color: isActive ? "#CCCCCC" : "gray",
+              })}
+            >
+              <div className="headernavitem"> Log In </div>
+            </NavLink>
+          )}
           <NavLink
             to="/view"
             style={({ isActive }) => ({
@@ -23,12 +39,17 @@ export default function Header() {
           >
             <div className="headernavitem"> View </div>
           </NavLink>
-          <NavLink
-            to="/submit"
-            style={({ isActive }) => ({ color: isActive ? "#CCCCCC" : "gray" })}
-          >
-            <div className="headernavitem"> Submit </div>
-          </NavLink>
+          {loggedIn ? (
+            <NavLink
+              to="/submit"
+              style={({ isActive }) => ({
+                color: isActive ? "#CCCCCC" : "gray",
+              })}
+            >
+              <div className="headernavitem"> Submit </div>
+            </NavLink>
+          ) : null}
+          ;
           {/* <NavLink
             to="/review"
             style={({ isActive }) => ({ color: isActive ? "#CCCCCC" : "gray" })}

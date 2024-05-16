@@ -15,7 +15,6 @@ function useMetadata(): AppMetadata {
 
   useEffect(() => {
     axios.get(metadata_url).then((res) => {
-      //   console.log("BEAMLINE! " + res.data.name);
       setAppMetdata(res.data);
     });
   }, []);

@@ -49,3 +49,7 @@ export interface AppMetadata {
   edges: Edge[];
   licences: string[];
 }
+
+export interface User {
+  identifier: string;
+}

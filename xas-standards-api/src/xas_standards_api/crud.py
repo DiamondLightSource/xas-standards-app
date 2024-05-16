@@ -81,23 +81,23 @@ def add_new_standard(session, file1, xs_input: XASStandardInput, additional_file
     tmp_filename = pvc_location + str(uuid.uuid4())
 
     with open(tmp_filename, "wb") as ntf:
-        filename = ntf.name
         ntf.write(file1.file.read())
-        xdi_data = xdi.read_xdi(filename)
 
-        set_labels = set(xdi_data.array_labels)
+    xdi_data = xdi.read_xdi(tmp_filename)
 
-        fluorescence = "mufluor" in set_labels
-        transmission = "mutrans" in set_labels
-        emission = "mutey" in set_labels
+    set_labels = set(xdi_data.array_labels)
 
-        xsd = XASStandardDataInput(
-            fluorescence=fluorescence,
-            location=tmp_filename,
-            original_filename=file1.filename,
-            emission=emission,
-            transmission=transmission,
-        )
+    fluorescence = "mufluor" in set_labels
+    transmission = "mutrans" in set_labels
+    emission = "mutey" in set_labels
+
+    xsd = XASStandardDataInput(
+        fluorescence=fluorescence,
+        location=tmp_filename,
+        original_filename=file1.filename,
+        emission=emission,
+        transmission=transmission,
+    )
 
     new_standard = XASStandard.model_validate(xs_input)
     new_standard.xas_standard_data = XASStandardData.model_validate(xsd)

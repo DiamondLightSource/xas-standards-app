@@ -2,13 +2,27 @@ import datetime
 import os
 from typing import Annotated, List, Optional, Union
 
-from fastapi import Depends, FastAPI, File, Form, Query, UploadFile
+import requests
+from fastapi import (
+    Depends,
+    FastAPI,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    Request,
+    Security,
+    UploadFile,
+    status,
+)
 from fastapi.responses import HTMLResponse
+from fastapi.security.http import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.staticfiles import StaticFiles
 from fastapi_pagination import add_pagination
 from fastapi_pagination.cursor import CursorPage
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlmodel import Session, create_engine, select
+from starlette.responses import RedirectResponse
 
 from .crud import (
     add_new_standard,
@@ -35,11 +49,19 @@ from .schemas import (
 )
 
 dev = False
-lifespan = None
 
+env_value = os.environ.get("FASTAPI_APP_ENV")
+
+if (env_value and env_value == "development"):
+    print("RUNNING IN DEV MODE")
+    dev = True
+
+get_bearer_token = HTTPBearer(auto_error=True)
 
 url = os.environ.get("POSTGRESURL")
 build_dir = os.environ.get("FRONTEND_BUILD_DIR")
+oidc_user_info_endpoint = os.environ.get("OIDC_USER_INFO_ENDPOINT")
+
 
 if url:
     engine = create_engine(url)
@@ -52,14 +74,55 @@ def get_session():
         yield session
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 CursorPage = CursorPage.with_custom_options(
     size=Query(10, ge=1, le=100),
 )
 
-
 add_pagination(app)
+
+@app.get("/login", response_class=RedirectResponse)
+async def redirect_home():
+    #proxy handles log in so if you reach here go home
+    return "/"
+
+
+async def get_current_user(auth: HTTPAuthorizationCredentials =
+                           Depends(get_bearer_token)):
+
+    if auth is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid user token",
+        )
+
+    if dev:
+        return auth.credentials
+
+    if oidc_user_info_endpoint is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="User info endpoint error",
+        )
+
+    response = requests.get(url=oidc_user_info_endpoint,
+        headers={"Authorization": f"Bearer {auth.credentials}"},
+    )
+
+    if response.status_code == 401:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid user token",
+        )
+
+    return response.json()["id"]
+
+
+
+@app.get("/api/user")
+async def check(user_id: str = Depends(get_current_user)):
+    return {"user" : user_id}
 
 
 @app.get("/api/metadata")
@@ -142,13 +205,14 @@ def add_standard_file(
     licence: Annotated[str, Form()],
     additional_files: Optional[list[UploadFile]] = Form(None),
     sample_comp: Optional[str] = Form(None),
+    user_id: str = Depends(get_current_user),
     session: Session = Depends(get_session),
 ) -> XASStandard:
 
     if additional_files:
         print(f"Additional files {len(additional_files)}")
 
-    person = select_or_create_person(session, "test1234")
+    person = select_or_create_person(session, user_id)
 
     form_input = XASStandardInput(
         submitter_id=person.id,
