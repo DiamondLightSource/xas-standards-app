@@ -1,12 +1,3 @@
-.chartbody {
-  flex: 2;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: stretch;
-}
-
-.chartarea {
-  display: flex;
-  flex: 1;
+.toolbar {
+  --h5w-toolbar--bgColor: blueviolet;
 }

@@ -1,8 +1,6 @@
-import "./App.css";
-
-import Header from "./components/Header.tsx";
+import HeaderMui from "./components/HeaderMui.tsx";
 import { Routes, Route } from "react-router-dom";
-import StandardViewer from "./components/StandardViewer.tsx";
+import StandardViewerMui from "./components/StandardViewerMui.tsx";
 import StandardSubmission from "./components/StandardSubmission.tsx";
 import WelcomePage from "./components/WelcomePage.tsx";
 
@@ -12,15 +10,18 @@ import { UserProvider } from "./contexts/UserContext.tsx";
 import LogInPage from "./components/LogInPage.tsx";
 import RequireAuth from "./components/RequireAuth.tsx";
 
+import Box from "@mui/material/Box";
+import { Stack, Toolbar } from "@mui/material";
+
 function App() {
   return (
-    <div className="mainwindow">
+    <Stack height="100vh" width="100vw" spacing={1}>
       <UserProvider>
-        <Header />
+        <HeaderMui />
         <MetadataProvider>
           <Routes>
             <Route path="/" element={<WelcomePage />} />
-            <Route path="/view" element={<StandardViewer />} />
+            <Route path="/view" element={<StandardViewerMui />} />
             <Route
               path="/submit"
               element={
@@ -34,7 +35,7 @@ function App() {
           </Routes>
         </MetadataProvider>
       </UserProvider>
-    </div>
+    </Stack>
   );
 }
 

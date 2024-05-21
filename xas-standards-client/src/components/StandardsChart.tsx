@@ -11,12 +11,17 @@ import {
 } from "@h5web/lib";
 import "@h5web/lib/dist/styles.css";
 
-import "./StandardsChart.css";
+// import "./StandardsChart.css";
+
+import Paper from "@mui/material/Paper";
+
+import { useTheme } from "@mui/material";
 
 import { useEffect, useState } from "react";
 
 import ndarray from "ndarray";
 import { XASData } from "../models";
+import { Box } from "@mui/material";
 
 function CurveOption(props: { option: CurveType }) {
   const { option } = props;
@@ -36,11 +41,14 @@ function XASChart(props) {
   const [useGrid, setUseGrid] = useState(true);
   const [curveOption, setCurveOption] = useState(curveOptions[0]);
 
+  const theme = useTheme();
+
   let xdata: ndarray.NdArray<number[]> = ndarray([0]);
   let ydata: ndarray.NdArray<number[]> = ndarray([0]);
 
   const aux = [];
 
+  // const style = { "--h5w-toolbar--bgColor": "#001d55" } as React.CSSProperties;
   let ydataLabel = "";
 
   const hideAll = !props.showTrans && !props.showFluor && !props.showRef;
@@ -83,11 +91,26 @@ function XASChart(props) {
     }
   }
 
+  const style = {
+    "--h5w-toolbar--bgColor": theme.palette.action.hover,
+  } as React.CSSProperties;
+
   const domain = getDomain(ydata);
 
   return (
-    <div className="chartbody">
-      <div className="charttoolbar">
+    <Paper
+      height="100%"
+      display="flex"
+      flexDirection="column"
+      sx={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        backgroundColor: (theme) => theme.palette.background.default,
+        fontFamily: (theme) => theme.typography.fontFamily,
+      }}
+    >
+      <Box style={style}>
         <Toolbar>
           <Separator />
           <ToggleBtn
@@ -124,8 +147,8 @@ function XASChart(props) {
           <Separator />
           <GridToggler onToggle={() => setUseGrid(!useGrid)} value={useGrid} />
         </Toolbar>
-      </div>
-      <div className="chartarea">
+      </Box>
+      <Box flex={1} display="flex">
         <LineVis
           abscissaParams={{
             value: xdata.data,
@@ -140,8 +163,8 @@ function XASChart(props) {
           scaleType={ScaleType.SymLog}
           auxiliaries={aux}
         />
-      </div>
-    </div>
+      </Box>
+    </Paper>
   );
 }
 
