@@ -1,4 +1,4 @@
-import "./App.css";
+// import "./App.css";
 
 import Header from "./components/Header.tsx";
 import { Routes, Route } from "react-router-dom";
@@ -12,9 +12,11 @@ import { UserProvider } from "./contexts/UserContext.tsx";
 import LogInPage from "./components/LogInPage.tsx";
 import RequireAuth from "./components/RequireAuth.tsx";
 
+import { Flex, Spacer } from "@chakra-ui/react";
+
 function App() {
   return (
-    <div className="mainwindow">
+    <Flex flexDir="column">
       <UserProvider>
         <Header />
         <MetadataProvider>
@@ -34,7 +36,7 @@ function App() {
           </Routes>
         </MetadataProvider>
       </UserProvider>
-    </div>
+    </Flex>
   );
 }
 

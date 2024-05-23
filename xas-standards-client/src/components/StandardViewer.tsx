@@ -7,6 +7,8 @@ import StandardsTable from "./StandardsTable.tsx";
 import { XASStandard, XASData } from "../models.ts";
 import { MetadataContext } from "../contexts/MetadataContext.tsx";
 
+import { Flex } from "@chakra-ui/react";
+
 const data_url = "/api/data";
 
 function StandardViewer() {
@@ -41,7 +43,7 @@ function StandardViewer() {
   const onClick = getData(setXASData);
 
   return (
-    <div className="mainbody">
+    <Flex>
       <StandardsTable
         standards={standards}
         elements={elements}
@@ -58,7 +60,7 @@ function StandardViewer() {
         setShowRef={setShowRef}
         contains={contains}
       />
-    </div>
+    </Flex>
   );
 }
 

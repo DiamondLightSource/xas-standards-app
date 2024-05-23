@@ -1,7 +1,11 @@
-import "./Header.css";
+// import "./Header.css";
 import { NavLink } from "react-router-dom";
 import { useContext } from "react";
 import { UserContext } from "../contexts/UserContext";
+
+import { Flex } from "@chakra-ui/react";
+import { Heading } from "@chakra-ui/react";
+import { Link } from "@chakra-ui/react";
 
 export default function Header() {
   const user = useContext(UserContext);
@@ -9,9 +13,20 @@ export default function Header() {
   const loggedIn = user != null;
 
   return (
-    <div className="header">
-      <h2 className="headerstart">XAS Standards</h2>
-      <div className="headerbuttons">
+    <Flex
+      flexDir="row"
+      width="100%"
+      justify-content="space-between"
+      align-items="center"
+    >
+      <Heading alignSelf="stretch">XAS Standards</Heading>
+      <Flex flexDir="row" flex={1}>
+        <Link
+          as={NavLink}
+          to="/dashboard"
+          p={2}
+          _activeLink={{ fontWeight: "bold" }}
+        ></Link>
         <nav>
           <NavLink
             to="/"
@@ -63,7 +78,7 @@ export default function Header() {
             <div className="headernavitem"> Log in </div>
           </NavLink> */}
         </nav>
-      </div>
-    </div>
+      </Flex>
+    </Flex>
   );
 }
