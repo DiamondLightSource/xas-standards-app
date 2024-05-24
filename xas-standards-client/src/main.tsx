@@ -7,19 +7,24 @@ import CssBaseline from "@mui/material/CssBaseline";
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
-const darkTheme = createTheme({
-  palette: {
-    mode: "dark",
-  },
-});
+async function enableMocking() {
+  if (process.env.NODE_ENV !== "development") {
+    return;
+  }
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <ThemeProvider theme={darkTheme}>
-        <CssBaseline />
+  const { worker } = await import("./mocks/browser");
+
+  // `worker.start()` returns a Promise that resolves
+  // once the Service Worker is up and ready to intercept requests.
+  return worker.start();
+}
+
+enableMocking().then(() => {
+  ReactDOM.createRoot(document.getElementById("root")!).render(
+    <React.StrictMode>
+      <BrowserRouter>
         <App />
-      </ThemeProvider>
-    </BrowserRouter>
-  </React.StrictMode>
-);
+      </BrowserRouter>
+    </React.StrictMode>
+  );
+});

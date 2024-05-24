@@ -1,8 +1,13 @@
-import "./ElementSelector.css";
+// import "./ElementSelector.css";
 import React, { useRef, useState } from "react";
-import { usePopper } from "react-popper";
 import SimplePeriodicTable from "./PeriodicTable";
 import { Element } from "../models";
+
+import { Button, Typography } from "@mui/material";
+import { Popover } from "@mui/material";
+import { Stack } from "@mui/material";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { MenuItem } from "@mui/material";
 
 function ElementSelector(props: {
   elements: Element[];
@@ -13,49 +18,73 @@ function ElementSelector(props: {
   const [pop, setPop] = useState(false);
   const boxRef = useRef();
   const tooltipRef = useRef();
-  const { styles, attributes } = usePopper(boxRef.current, tooltipRef.current);
+  // const { styles, attributes } = usePopper(boxRef.current, tooltipRef.current);
+
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null
+  );
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleChange = (event: SelectChangeEvent) => {
+    console.log(event.target.value);
+    props.setSelectedElement(Number(event.target.value));
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
 
   return (
-    <div className="elementselector">
-      <div className="elementLabel">Element</div>
-      <select
-        name="element"
-        id="elementMain"
-        value={props.selectedElement}
-        onChange={(e) => {
-          props.setSelectedElement(e.target.value);
+    // <div className="elementselector">
+    <Stack direction="row" spacing={2}>
+      <Select
+        sx={{ minWidth: 150 }}
+        labelId="demo-simple-select-label"
+        id="demo-simple-select"
+        value={String(props.selectedElement)}
+        label="Element"
+        onChange={handleChange}
+      >
+        <MenuItem value={0}>All Elements</MenuItem>
+        {elements.map((x, y) => (
+          <MenuItem key={y} value={x.z}>
+            {x.symbol}
+          </MenuItem>
+        ))}
+      </Select>
+      <Button
+        aria-describedby={id}
+        variant="outlined"
+        sx={{ textTransform: "none" }}
+        onClick={handleClick}
+      >
+        Periodic Table
+      </Button>
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
         }}
       >
-        <option key={-1} value={0}>
-          All
-        </option>
-        {elements.map((x, y) => (
-          <option key={y} value={x.z}>
-            {x.symbol}
-          </option>
-        ))}
-      </select>
-      <div>
-        <button ref={boxRef} onClick={() => setPop(!pop)}>
-          Periodic Table
-        </button>
-        <div
-          className="ptpop"
-          hidden={!pop}
-          ref={tooltipRef}
-          style={styles.popper}
-          {...attributes.popper}
-        >
-          <SimplePeriodicTable
-            onClickElement={(el) => {
-              props.setSelectedElement(el);
-              setPop(false);
-            }}
-            elementSize={55}
-          />
-        </div>
-      </div>
-    </div>
+        <SimplePeriodicTable
+          onClickElement={(el) => {
+            props.setSelectedElement(el);
+            setAnchorEl(null);
+            // setPop(false);
+          }}
+          elementSize={55}
+        />
+      </Popover>
+    </Stack>
   );
 }
 

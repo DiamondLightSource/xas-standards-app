@@ -91,8 +91,28 @@ function XASChart(props) {
     }
   }
 
-  const style = {
+  const toolbarstyle = {
     "--h5w-toolbar--bgColor": theme.palette.action.hover,
+    "--h5w-tickLabels--color": theme.palette.text.primary,
+    "--h5w-ticks--color": theme.palette.text.primary,
+    "--h5w-grid--color": "black",
+    "--h5w-toolbar-label--color": theme.palette.primary.dark,
+    "--h5w-btn-hover--bgColor": theme.palette.action.hover,
+    "--h5w-btnPressed--bgColor": theme.palette.action.selected,
+    "--h5w-selector-menu--bgColor": theme.palette.background.default,
+    "--h5w-selector-option-selected--bgColor": theme.palette.action.selected,
+  } as React.CSSProperties;
+
+  const plotstyle = {
+    "--h5w-tickLabels--color": theme.palette.text.primary,
+    "--h5w-ticks--color": theme.palette.text.primary,
+    "--h5w-grid--color": theme.palette.text.secondary,
+    "--h5w-axisLabels--color": theme.palette.text.primary,
+    "--h5w-line--color": theme.palette.primary.dark,
+    "--h5w-line--colorAux": [
+      theme.palette.success.light,
+      theme.palette.secondary.dark,
+    ],
   } as React.CSSProperties;
 
   const domain = getDomain(ydata);
@@ -101,7 +121,7 @@ function XASChart(props) {
     <Paper
       height="100%"
       display="flex"
-      flexDirection="column"
+      // flexdirection="column"
       sx={{
         height: "100%",
         display: "flex",
@@ -110,7 +130,7 @@ function XASChart(props) {
         fontFamily: (theme) => theme.typography.fontFamily,
       }}
     >
-      <Box style={style}>
+      <Box style={toolbarstyle}>
         <Toolbar>
           <Separator />
           <ToggleBtn
@@ -148,7 +168,7 @@ function XASChart(props) {
           <GridToggler onToggle={() => setUseGrid(!useGrid)} value={useGrid} />
         </Toolbar>
       </Box>
-      <Box flex={1} display="flex">
+      <Box style={plotstyle} flex={1} display="flex">
         <LineVis
           abscissaParams={{
             value: xdata.data,

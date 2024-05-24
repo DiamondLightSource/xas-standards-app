@@ -18,6 +18,8 @@ import { UserContext } from "../contexts/UserContext";
 
 import { useNavigate } from "react-router-dom";
 
+import { Box, Typography, Input, Button } from "@mui/material";
+
 const standards_url = "/api/standards";
 
 function StandardSubmission() {
@@ -140,23 +142,30 @@ function StandardSubmission() {
   };
 
   return (
-    <div className="submissionpage">
-      <h2>Upload A Standard XDI file</h2>
-      <form
+    <Box
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      gap={5}
+    >
+      <Typography variant="h5">Upload A Standard XDI file</Typography>
+      <Box
+        component="form"
         className="submissionpage"
         id="submissionform"
         onSubmit={handleSubmit}
       >
-        <fieldset>
+        <Box component="fieldset">
           <legend>XDI File</legend>
-          <input type="file" name="file1" onChange={handleFile} />
-          <div>
+          <Input type="file" name="file1" onChange={handleFile} />
+          <Typography>
             Submitted file must be in xdi format and contain an energy column,
             and either "mu" datasets or "i" datasets with corresponding i0.
             Inclusion of Reference datasets (murefer or irefer with i0) is
             mandatory.
-          </div>
-        </fieldset>
+          </Typography>
+        </Box>
         <div className="twocolumn">
           <ElementForm
             elementId={elementId}
@@ -215,9 +224,9 @@ function StandardSubmission() {
             diamond to publish data under selected licence
           </label>
         </div>
-        <button type="submit">Submit</button>
-      </form>
-    </div>
+        <Button type="submit">Submit</Button>
+      </Box>
+    </Box>
   );
 }
 
