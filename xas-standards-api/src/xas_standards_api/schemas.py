@@ -108,6 +108,7 @@ class XASStandardDataInput(SQLModel):
     transmission: bool
     fluorescence: bool
     emission: bool
+    reference: bool
     location: str
 
 
@@ -132,7 +133,6 @@ class LicenceType(enum.Enum):
 
 
 class XASStandardInput(SQLModel):
-
     submitter_id: int = Field(foreign_key="person.id")
     submission_date: datetime.datetime
     collection_date: Optional[datetime.datetime]

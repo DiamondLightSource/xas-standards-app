@@ -77,7 +77,6 @@ def select_or_create_person(session, identifier):
 
 
 def add_new_standard(session, file1, xs_input: XASStandardInput, additional_files):
-
     tmp_filename = pvc_location + str(uuid.uuid4())
 
     with open(tmp_filename, "wb") as ntf:
@@ -90,12 +89,14 @@ def add_new_standard(session, file1, xs_input: XASStandardInput, additional_file
     fluorescence = "mufluor" in set_labels
     transmission = "mutrans" in set_labels
     emission = "mutey" in set_labels
+    reference = "murefer" in set_labels
 
     xsd = XASStandardDataInput(
         fluorescence=fluorescence,
         location=tmp_filename,
         original_filename=file1.filename,
         emission=emission,
+        reference=reference,
         transmission=transmission,
     )
 
@@ -109,7 +110,6 @@ def add_new_standard(session, file1, xs_input: XASStandardInput, additional_file
 
 
 def get_filepath(session, id):
-
     standard = session.get(XASStandard, id)
     if not standard:
         raise HTTPException(status_code=404, detail=f"No standard with id={id}")
@@ -130,7 +130,6 @@ def get_file(session, id):
 
 
 def get_norm(energy, group, type):
-
     if type in group:
         r = group[type]
         tr = set_xafsGroup(None)
@@ -143,7 +142,6 @@ def get_norm(energy, group, type):
 
 
 def get_data(session, id):
-
     xdi_location = get_filepath(session, id)
 
     xdi_data = xdi.read_xdi(xdi_location)

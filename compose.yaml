@@ -1,0 +1,13 @@
+services:
+  postgres:
+    image: postgres:12
+    restart: always
+    environment:
+        POSTGRES_USER: xasadmin
+        POSTGRES_PASSWORD: password
+        POSTGRES_DB: xasstandarddb
+    ports:
+        - '5432:5432'
+    volumes:
+        - ./db_data:/var/lib/postgresql/data
+        - ./database/tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
