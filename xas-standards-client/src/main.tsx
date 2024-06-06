@@ -3,10 +3,6 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.tsx";
 
-import CssBaseline from "@mui/material/CssBaseline";
-
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-
 async function enableMocking() {
   if (process.env.NODE_ENV !== "development") {
     return;

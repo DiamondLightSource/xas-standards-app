@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-
 import { Container, Typography, Box } from "@mui/material";
 
 function WelcomePage() {

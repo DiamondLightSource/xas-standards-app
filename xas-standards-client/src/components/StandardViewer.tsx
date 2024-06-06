@@ -8,7 +8,6 @@ import { XASStandard, XASData } from "../models.ts";
 import { MetadataContext } from "../contexts/MetadataContext.tsx";
 
 import { Grid } from "@mui/material";
-import Box from "@mui/material";
 
 const data_url = "/api/data";
 

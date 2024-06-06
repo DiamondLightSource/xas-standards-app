@@ -1,8 +1,9 @@
-import HeaderMui from "./components/Header.tsx";
+import Header from "./components/Header.tsx";
 import { Routes, Route } from "react-router-dom";
 import StandardViewerMui from "./components/StandardViewer.tsx";
 import StandardSubmission from "./components/StandardSubmission.tsx";
 import WelcomePage from "./components/WelcomePage.tsx";
+import BasicSelect from "./components/SelectTest.tsx";
 
 import { MetadataProvider } from "./contexts/MetadataContext.tsx";
 import { UserProvider } from "./contexts/UserContext.tsx";
@@ -12,10 +13,8 @@ import RequireAuth from "./components/RequireAuth.tsx";
 
 import { CssBaseline } from "@mui/material";
 
-import Box from "@mui/material/Box";
-
-import { useState, useMemo, createContext } from "react";
-import { Stack, Toolbar } from "@mui/material";
+import { useState, useMemo } from "react";
+import { Stack } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import ColorModeContext from "./contexts/ColorModeContext.tsx";
@@ -47,10 +46,11 @@ function App() {
         <CssBaseline />
         <Stack height="100vh" width="100vw" spacing={1}>
           <UserProvider>
-            <HeaderMui />
+            <Header />
             <MetadataProvider>
               <Routes>
                 <Route path="/" element={<WelcomePage />} />
+                <Route path="/test" element={<BasicSelect />} />
                 <Route path="/view" element={<StandardViewerMui />} />
                 <Route
                   path="/submit"

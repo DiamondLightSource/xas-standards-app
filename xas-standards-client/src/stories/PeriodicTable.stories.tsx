@@ -3,7 +3,6 @@ import { fn } from "@storybook/test";
 
 import SimplePeriodicTable from "../components/PeriodicTable";
 
-import "../index.css";
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta = {
   title: "XAS-Standards/SimplePeriodicTable",

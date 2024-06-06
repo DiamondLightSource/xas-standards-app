@@ -11,17 +11,14 @@ import {
 } from "@h5web/lib";
 import "@h5web/lib/dist/styles.css";
 
-// import "./StandardsChart.css";
-
 import Paper from "@mui/material/Paper";
 
 import { useTheme } from "@mui/material";
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import ndarray from "ndarray";
-import { XASData } from "../models";
 import { Box } from "@mui/material";
+import { XASData } from "../models";
 
 function CurveOption(props: { option: CurveType }) {
   const { option } = props;
@@ -33,7 +30,16 @@ function CurveOption(props: { option: CurveType }) {
   );
 }
 
-function XASChart(props) {
+function XASChart(props: {
+  xasdata: XASData;
+  showTrans: boolean;
+  showFluor: boolean;
+  showRef: boolean;
+  setShowTrans: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowFluor: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowRef: React.Dispatch<React.SetStateAction<boolean>>;
+  contains: boolean[];
+}) {
   const curveOptions: CurveType[] = Object.values(
     CurveType
   ) as Array<CurveType>;
@@ -48,7 +54,6 @@ function XASChart(props) {
 
   const aux = [];
 
-  // const style = { "--h5w-toolbar--bgColor": "#001d55" } as React.CSSProperties;
   let ydataLabel = "";
 
   const hideAll = !props.showTrans && !props.showFluor && !props.showRef;
@@ -65,7 +70,7 @@ function XASChart(props) {
     }
 
     if (props.showFluor) {
-      const fdata = ndarray(props.xasdata.mufluro, [
+      const fdata = ndarray(props.xasdata.mufluor, [
         props.xasdata.mutrans.length,
       ]);
       if (!primaryFound) {
