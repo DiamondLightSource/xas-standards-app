@@ -18,6 +18,7 @@ export interface XASData {
 export interface Beamline {
   name: string;
   facility: Facility;
+  id: number;
 }
 
 export interface Facility {

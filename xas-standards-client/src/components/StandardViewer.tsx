@@ -7,6 +7,8 @@ import StandardsTable from "./StandardsTable.tsx";
 import { XASStandard, XASData } from "../models.ts";
 import { MetadataContext } from "../contexts/MetadataContext.tsx";
 
+import { Grid } from "@mui/material";
+
 const data_url = "/api/data";
 
 function StandardViewer() {
@@ -41,24 +43,28 @@ function StandardViewer() {
   const onClick = getData(setXASData);
 
   return (
-    <div className="mainbody">
-      <StandardsTable
-        standards={standards}
-        elements={elements}
-        updatePlot={onClick}
-        setStandards={setStandardsList}
-      />
-      <XASChart
-        xasdata={xasdata}
-        showTrans={showTrans}
-        showFluor={showFluor}
-        showRef={showRef}
-        setShowTrans={setShowTrans}
-        setShowFluor={setShowFluor}
-        setShowRef={setShowRef}
-        contains={contains}
-      />
-    </div>
+    <Grid height="100%" container>
+      <Grid item xs={5} padding={1}>
+        <StandardsTable
+          standards={standards}
+          elements={elements}
+          updatePlot={onClick}
+          setStandards={setStandardsList}
+        />
+      </Grid>
+      <Grid item height="100%" xs={7} padding={1}>
+        <XASChart
+          xasdata={xasdata}
+          showTrans={showTrans}
+          showFluor={showFluor}
+          showRef={showRef}
+          setShowTrans={setShowTrans}
+          setShowFluor={setShowFluor}
+          setShowRef={setShowRef}
+          contains={contains}
+        />
+      </Grid>
+    </Grid>
   );
 }
 

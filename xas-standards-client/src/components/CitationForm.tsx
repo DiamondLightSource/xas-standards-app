@@ -1,10 +1,17 @@
 import axios from "axios";
 import { useState } from "react";
 
+import { Grid, TextField, Button, Typography } from "@mui/material";
+
 const crossref_url = "https://api.crossref.org/works/";
 const mailto = "?mailto=dataanalysis@diamond.ac.uk";
 
-function CitationForm(props) {
+function CitationForm(props : {
+  citation : string;
+  setCitation: React.Dispatch<React.SetStateAction<string>>;
+  doi: string;
+  setDOI: React.Dispatch<React.SetStateAction<string>>;
+}) {
   const citation = props.citation;
   const setCitation = props.setCitation;
   const doi = props.doi;
@@ -22,39 +29,45 @@ function CitationForm(props) {
     if (matches) {
       axios
         .get(full_url)
-        .then((res) => {
+        .then(() => {
           setValidDOI(true);
         })
-        .catch((error) => {
+        .catch(() => {
           setValidDOI(false);
         });
     }
   };
 
   return (
-    <fieldset className="twocolumn">
+    <Grid component="fieldset" container spacing={1}>
       <legend>Reference</legend>
-      <label htmlFor="citation">Citation</label>
-      <input
-        type="text"
-        id="citation"
-        value={citation}
-        onChange={(e) => setCitation(e.target.value)}
-        required
-      ></input>
-      <label htmlFor="doi">DOI</label>
-      <input
-        type="text"
-        id="doi"
-        value={doi}
-        onChange={(e) => setDOI(e.target.value)}
-        required
-      ></input>
-      <button type="button" onClick={validateDOI}>
+      <Grid item xs={6}>
+        <TextField
+          id="citation"
+          label="Citation"
+          variant="outlined"
+          value={citation}
+          onChange={(e) => setCitation(e.target.value)}
+        />
+      </Grid>
+      <Grid item xs={6}>
+        <TextField
+          id="doi"
+          label="DOI"
+          variant="outlined"
+          value={doi}
+          onChange={(e) => setDOI(e.target.value)}
+        />
+      </Grid>
+      <Grid item xs={6}>
+      <Button onClick={validateDOI}>
         Validate DOI
-      </button>
-      <div>{isValidDOI ? "Valid DOI" : "Invalid DOI"}</div>
-    </fieldset>
+      </Button>
+      </Grid>
+      <Grid item xs={6}>
+      <Typography>{isValidDOI ? "Valid DOI" : "Invalid DOI"}</Typography>
+    </Grid>
+    </Grid>
   );
 }
 
