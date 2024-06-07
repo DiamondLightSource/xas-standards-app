@@ -10,11 +10,14 @@ import ListItem from "@mui/material/ListItem";
 import List from "@mui/material/List";
 import ListItemText from "@mui/material/ListItemText";
 import Stack from "@mui/material/Stack";
-import { Switch } from "@mui/material";
+import {Switch } from "@mui/material";
 
 import { NavLink } from "react-router-dom";
 
+import DiamondIcon from "./DiamondIcon";
+
 import ColorModeContext from "../contexts/ColorModeContext";
+import UserIcon from "./UserIcon";
 
 function NavListItem(props: { to: string; label: string }) {
   const to = props.to;
@@ -54,11 +57,12 @@ export default function Header() {
 
   return (
     <AppBar style={{ position: "static" }}>
-      <Toolbar>
+      <Toolbar sx={{justifyContent:"space-between", alignItems:"center"}}>
+        <Stack direction="row" alignItems={"center"} spacing={2}>
+        <DiamondIcon />
         <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
           XAS Standards
         </Typography>
-        <Switch onChange={colorMode.toggleColorMode}></Switch>
         <List component={Stack} direction="row">
           {Object.entries(navitems).map(([key, value]) => (
             <ListItem key={key}>
@@ -75,12 +79,23 @@ export default function Header() {
               </ListItemButton>
             </ListItem>
           ))}
-          {loggedIn ? (
+          {loggedIn && (
             <NavListItem to="/submit" label="Submit" />
-          ) : (
-            <NavListItem to="/login" label="Login" />
-          )}
+          ) }
         </List>
+        </Stack>
+        <Stack direction="row" alignItems={"center"}>
+        <Switch onChange={colorMode.toggleColorMode}></Switch>
+        {!loggedIn ? (
+            <NavListItem to="/login" label="Login" />
+          ) : (        <Stack alignItems={"flex-end"}>
+                        <UserIcon />
+            <Typography>
+              {user.identifier}
+            </Typography>
+
+          </Stack>)}
+        </Stack>
       </Toolbar>
     </AppBar>
   );
