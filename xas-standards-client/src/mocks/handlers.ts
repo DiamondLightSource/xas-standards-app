@@ -140,6 +140,14 @@ export const handlers = [
     return HttpResponse.json(response);
   }),
 
+  http.get('/login', () => {
+    return new HttpResponse('<div>Hello</div>', {
+      headers: {
+        'Content-Type': 'application/html'
+      }
+    })
+  })
+
   // http.get("/login", () => {
   //   // ...and respond to them using this JSON response.
   //   return new HttpResponse(null, { status: 302, Location: "/" });
