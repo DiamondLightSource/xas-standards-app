@@ -8,10 +8,10 @@ import { AxiosResponse, AxiosError } from "axios";
 import XDIFile from "../xdifile";
 
 import "./StandardSubmission.css";
-import ElementForm from "./ElementForm";
-import SampleForm from "./SampleForm";
-import InstrumentForm from "./InstrumentForm";
-import CitationForm from "./CitationForm";
+import ElementForm from "./submission/ElementForm";
+import SampleForm from "./submission/SampleForm";
+import InstrumentForm from "./submission/InstrumentForm";
+import CitationForm from "./submission/CitationForm";
 import AdditionalInformationForm from "./AdditionalInfoForm";
 
 import { UserContext } from "../contexts/UserContext";

@@ -82,6 +82,9 @@ export default function Header() {
           {loggedIn && (
             <NavListItem to="/submit" label="Submit" />
           ) }
+          {loggedIn && (
+            <NavListItem to="/review" label="Review" />
+          ) }
         </List>
         </Stack>
         <Stack direction="row" alignItems={"center"}>

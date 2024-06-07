@@ -1,6 +1,6 @@
 import { Select, Box, MenuItem, FormControl, InputLabel, Stack } from "@mui/material";
 
-import { Element, Edge } from "../models";
+import { Element, Edge } from "../../models";
 
 function ElementForm(props: {
   elementId: number;

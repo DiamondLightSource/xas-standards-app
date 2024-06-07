@@ -8,7 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 
-import { Beamline } from "../models";
+import { Beamline } from "../../models";
 
 function InstrumentForm(props : {
   beamlines : Beamline[]
