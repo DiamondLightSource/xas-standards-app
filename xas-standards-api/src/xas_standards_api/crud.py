@@ -49,11 +49,14 @@ def get_standard(session, id) -> XASStandard:
         return standard
     else:
         raise HTTPException(status_code=404, detail=f"No standard with id={id}")
+    
 
 
-def update_review(session, review):
-    standard = session.get(XASStandard, review.id)
+def update_review(session, review, reviewer_id):
+    standard = session.get(XASStandard, review.standard_id)
     standard.review_status = review.review_status
+    standard.reviewer_comments = review.reviewer_comments
+    standard.reviewer_id = reviewer_id
     session.add(standard)
     session.commit()
     session.refresh(standard)
@@ -89,6 +92,7 @@ def add_new_standard(session, file1, xs_input: XASStandardInput, additional_file
 
     fluorescence = "mufluor" in set_labels
     transmission = "mutrans" in set_labels
+    reference = "murefer" in set_labels
     emission = "mutey" in set_labels
 
     xsd = XASStandardDataInput(
@@ -97,6 +101,7 @@ def add_new_standard(session, file1, xs_input: XASStandardInput, additional_file
         original_filename=file1.filename,
         emission=emission,
         transmission=transmission,
+        reference=reference,
     )
 
     new_standard = XASStandard.model_validate(xs_input)

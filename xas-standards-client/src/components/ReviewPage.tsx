@@ -7,12 +7,12 @@ import axios from "axios";
 
 import { useState } from "react";
 
-import { XASData, XASStandard } from "../models";
+import { XASData, AdminXASStandard } from "../models";
 
 const data_url = "/api/data";
 
 function ReviewPage() {
-  const [standards, setStandardsList] = useState<XASStandard[]>([]);
+  const [standards, setStandardsList] = useState<AdminXASStandard[]>([]);
 
   const [xasdata, setXASData] = useState<XASData | null>(null);
   const [showTrans, setShowTrans] = useState(false);

@@ -78,7 +78,9 @@ function StandardsTable(props: {
       setSelectedStandard={setSelectedStandard} 
       setCurrent={setCurrent}
       prevNext={prevNext}/>
+      {selectedStandard && 
       <StandardMetadataCard standard={selectedStandard} />
+      }
     </Stack>
   );
 }

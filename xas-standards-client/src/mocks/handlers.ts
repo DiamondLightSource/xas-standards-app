@@ -40,6 +40,7 @@ export const handlers = [
     // return new HttpResponse(null, { status: 401 });
     return HttpResponse.json({
       user: "abc12345",
+      admin: true
     });
   }),
 

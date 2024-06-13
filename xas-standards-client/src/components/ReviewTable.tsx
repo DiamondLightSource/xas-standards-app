@@ -1,26 +1,27 @@
 import StandardsTableView from "./StandardsTableView"
 import StandardMetadataCard from "./StandardMetadataCard";
+import ReviewCard from "./ReviewCard";
 
 import { Stack } from "@mui/material";
 
-import { XASStandard } from "../models";
+import {AdminXASStandard, XASStandard } from "../models";
 
 import { useState, useEffect } from "react";
 
 import axios from "axios";
 
 
-const standards_url = "/api/standards";
+const standards_url = "/api/admin/standards";
 
 const nResults = 7;
 
 export default function ReviewTable(props : {
-    standards: XASStandard[];
+    standards: AdminXASStandard[];
     setStandards: React.Dispatch<XASStandard[]>;
     updatePlot: React.Dispatch<number>;
 }) {
 
-    const [selectedStandard, setSelectedStandard] = useState<XASStandard>();
+    const [selectedStandard, setSelectedStandard] = useState<AdminXASStandard>();
     const [current, setCurrent] = useState<string | null>(null);
     const [prevNext, setPrevNext] = useState<string[] | null>(null);
 
@@ -39,7 +40,7 @@ export default function ReviewTable(props : {
       }
 
       axios.get(url).then((response) => {
-        const output: XASStandard[] = response.data.items as XASStandard[];
+        const output: AdminXASStandard[] = response.data.items as AdminXASStandard[];
         setPrevNext([response.data.previous_page, response.data.next_page]);
         setStandards(output);
       });
@@ -47,7 +48,7 @@ export default function ReviewTable(props : {
     get_req(current);
   }, [current, setStandards]);
 
-  const stds: (XASStandard | null)[] = [...props.standards];
+  const stds: (AdminXASStandard | null)[] = [...props.standards];
 
   if (props.standards.length < nResults) {
     while (stds.length < nResults) {
@@ -62,7 +63,11 @@ export default function ReviewTable(props : {
         setSelectedStandard={setSelectedStandard} 
         setCurrent={setCurrent}
         prevNext={prevNext}/>
+        {selectedStandard && <>
         <StandardMetadataCard standard={selectedStandard} />
+        <ReviewCard standard={selectedStandard}/>
+        </>
+      }
         </Stack>
     )
 }

@@ -53,4 +53,5 @@ export interface AppMetadata {
 
 export interface User {
   identifier: string;
+  admin: boolean;
 }

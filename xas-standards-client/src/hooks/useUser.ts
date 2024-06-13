@@ -12,7 +12,7 @@ function useUser(): User | null {
       .get(user_url)
       .then((res: AxiosResponse) => {
         // console.log(res.status);
-        setCurrentUser({ identifier: res.data.user });
+        setCurrentUser({ identifier: res.data.user, admin: res.data.admin});
       })
       .catch((error) => {
         console.log(error.response);
