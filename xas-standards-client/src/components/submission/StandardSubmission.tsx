@@ -1,11 +1,11 @@
 import { useState, useContext } from "react";
 
-import { MetadataContext } from "../contexts/MetadataContext";
+import { MetadataContext } from "../../contexts/MetadataContext";
 
 import axios from "axios";
 import { AxiosResponse, AxiosError } from "axios";
 
-import XDIFile from "../xdifile";
+import XDIFile from "../../xdifile";
 
 import ElementForm from "./ElementForm";
 import SampleForm from "./SampleForm";

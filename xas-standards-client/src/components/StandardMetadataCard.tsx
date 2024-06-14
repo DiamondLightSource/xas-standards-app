@@ -9,12 +9,8 @@ import {
 
 const data_url = "/api/data";
 
-function StandardMetadataCard(props: { standard: XASStandard | undefined }) {
+function StandardMetadataCard(props: { standard: XASStandard }) {
   const standard = props.standard;
-
-  if (!standard) {
-    return <Card></Card>;
-  }
 
   return (
     <Card variant="outlined">

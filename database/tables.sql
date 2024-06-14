@@ -182,7 +182,7 @@ CREATE TABLE beamline (
 	xray_source TEXT,
 	facility_id INTEGER,
 	PRIMARY KEY (id),
-	UNIQUE (name),
+    UNIQUE (facility_id, name),
 	FOREIGN KEY(facility_id) REFERENCES facility (id)
 );
 
@@ -203,22 +203,22 @@ INSERT INTO "beamline" VALUES(12,'I18','The Microfocus Beamline','I18 Undulator'
 INSERT INTO "beamline" VALUES(13,'I20-scanning','Versatile X-ray Spectroscopy','I20 Wiggler', 8);
 
 CREATE TABLE person (
-	id SERIAL,
+	id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 	identifier TEXT NOT NULL,
-	PRIMARY KEY (id),
+    admin BOOLEAN NOT NULL DEFAULT FALSE,
 	UNIQUE (identifier)
 );
 
 COMMENT ON TABLE person IS 'Table to store unique identifier of user';
 
 CREATE TABLE xas_standard_data (
-    id SERIAL,
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 	original_filename TEXT NOT NULL,
     transmission BOOLEAN NOT NULL,
     fluorescence BOOLEAN NOT NULL,
+    emission BOOLEAN NOT NULL,
     reference BOOLEAN NOT NULL,
-    location TEXT NOT NULL,
-	PRIMARY KEY (id)
+    location TEXT NOT NULL
 );
 
 COMMENT ON TABLE xas_standard_data IS 'Data file storing the standard data';
@@ -227,7 +227,7 @@ CREATE TYPE review_status_enum AS ENUM('pending', 'approved', 'rejected');
 CREATE TYPE licence_enum AS ENUM('cc_by', 'cc_0', 'logged_in_only');
 
 CREATE Table xas_standard (
-    id SERIAL,
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     submitter_id INTEGER NOT NULL,
     reviewer_id INTEGER,
     submission_date TIMESTAMP,
@@ -240,12 +240,13 @@ CREATE Table xas_standard (
     edge_id INTEGER,
     sample_name TEXT,
     sample_prep TEXT,
+    sample_comp TEXT,
     beamline_id INTEGER,
     mono_name TEXT,
     mono_dspacing TEXT,
     additional_metadata TEXT,
+    citation TEXT,
     licence licence_enum NOT NULL,
-    PRIMARY KEY (id),
     FOREIGN KEY(submitter_id) REFERENCES person (id),
     FOREIGN KEY(reviewer_id) REFERENCES person (id),
     FOREIGN KEY(data_id) REFERENCES xas_standard_data (id),
@@ -257,11 +258,10 @@ CREATE Table xas_standard (
 COMMENT ON TABLE xas_standard IS 'Metadata relating to an xas standard measurement';
 
 CREATE Table xas_standard_attachment (
-    id SERIAL,
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     xas_standard_id INTEGER NOT NULL,
     location TEXT NOT NULL,
     description TEXT,
-    PRIMARY KEY (id),
     FOREIGN KEY(xas_standard_id) REFERENCES xas_standard (id)
 );
 

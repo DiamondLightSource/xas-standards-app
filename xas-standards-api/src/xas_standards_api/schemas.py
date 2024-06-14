@@ -6,11 +6,6 @@ from pydantic import BaseModel
 from sqlmodel import Column, Enum, Field, Relationship, SQLModel
 
 
-class Review(BaseModel):
-    id: int
-    review_status: str
-
-
 class Mono(BaseModel):
     name: Optional[str] = None
     d_spacing: Optional[str] = None
@@ -27,6 +22,7 @@ class PersonInput(SQLModel):
 
 class Person(PersonInput, table=True):
     id: int | None = Field(primary_key=True, default=None)
+    admin: bool = False
 
 
 class ElementInput(SQLModel):
@@ -107,6 +103,7 @@ class XASStandardDataInput(SQLModel):
     original_filename: str
     transmission: bool
     fluorescence: bool
+    reference: bool
     emission: bool
     location: str
 
@@ -153,7 +150,7 @@ class XASStandard(XASStandardInput, table=True):
     data_id: int | None = Field(foreign_key="xas_standard_data.id", default=None)
     reviewer_id: Optional[int] = Field(foreign_key="person.id", default=None)
     reviewer_comments: Optional[str] = None
-    review_status: Optional[ReviewStatus] = Field(
+    review_status: ReviewStatus = Field(
         sa_column=Column(Enum(ReviewStatus)), default=ReviewStatus.pending
     )
 
@@ -161,6 +158,12 @@ class XASStandard(XASStandardInput, table=True):
     element: Element = Relationship(sa_relationship_kwargs={"lazy": "joined"})
     edge: Edge = Relationship(sa_relationship_kwargs={"lazy": "joined"})
     beamline: Beamline = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
+    submitter: Person = Relationship(
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "[XASStandard.submitter_id]",
+        }
+    )
 
 
 class XASStandardResponse(XASStandardInput):
@@ -171,7 +174,12 @@ class XASStandardResponse(XASStandardInput):
     submitter_id: int
 
 
-class XASStandardAdminResponse(XASStandardResponse):
-    reviewer_id: Optional[int] = None
+class AdminXASStandardResponse(XASStandardResponse):
+    submitter: Person
+
+
+class XASStandardAdminReviewInput(SQLModel):
     reviewer_comments: Optional[str] = None
-    review_status: Optional[ReviewStatus] = None
+    review_status: ReviewStatus
+    standard_id: int
+    # get fedid from person table

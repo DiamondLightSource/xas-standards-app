@@ -1,9 +1,8 @@
 import Header from "./components/Header.tsx";
 import { Routes, Route } from "react-router-dom";
 import StandardViewerMui from "./components/StandardViewer.tsx";
-import StandardSubmission from "./components/StandardSubmission.tsx";
+import StandardSubmission from "./components/submission/StandardSubmission.tsx";
 import WelcomePage from "./components/WelcomePage.tsx";
-import BasicSelect from "./components/SelectTest.tsx";
 
 import { MetadataProvider } from "./contexts/MetadataContext.tsx";
 import { UserProvider } from "./contexts/UserContext.tsx";
@@ -18,6 +17,7 @@ import { Stack } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import ColorModeContext from "./contexts/ColorModeContext.tsx";
+import ReviewPage from "./components/ReviewPage.tsx";
 
 function App() {
   const [mode, setMode] = useState<"light" | "dark">("light");
@@ -50,7 +50,6 @@ function App() {
             <MetadataProvider>
               <Routes>
                 <Route path="/" element={<WelcomePage />} />
-                <Route path="/test" element={<BasicSelect />} />
                 <Route path="/view" element={<StandardViewerMui />} />
                 <Route
                   path="/submit"
@@ -60,6 +59,7 @@ function App() {
                     </RequireAuth>
                   }
                 />
+                <Route path="/review" element={<ReviewPage />} />
                 <Route path="/login" element={<LogInPage />} />
                 {/* <Route path="/review" element={<ReviewPage />} /> */}
               </Routes>

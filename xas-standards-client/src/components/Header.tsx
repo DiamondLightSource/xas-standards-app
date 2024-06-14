@@ -44,6 +44,7 @@ export default function Header() {
   const user = useContext(UserContext);
   console.log(user);
   const loggedIn = user != null;
+  const admin = user != null && user.admin
   console.log(loggedIn);
 
   const navitems = {
@@ -81,6 +82,9 @@ export default function Header() {
           ))}
           {loggedIn && (
             <NavListItem to="/submit" label="Submit" />
+          ) }
+          {admin && (
+            <NavListItem to="/review" label="Review" />
           ) }
         </List>
         </Stack>

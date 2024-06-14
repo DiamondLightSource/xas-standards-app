@@ -31,7 +31,7 @@ function CurveOption(props: { option: CurveType }) {
 }
 
 function XASChart(props: {
-  xasdata: XASData;
+  xasdata: XASData | null;
   showTrans: boolean;
   showFluor: boolean;
   showRef: boolean;
@@ -124,8 +124,6 @@ function XASChart(props: {
 
   return (
     <Paper
-      height="100%"
-      display="flex"
       // flexdirection="column"
       sx={{
         height: "100%",

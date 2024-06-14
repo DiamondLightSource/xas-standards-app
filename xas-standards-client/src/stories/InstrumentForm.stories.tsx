@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 
-import InstrumentForm from "../components/InstrumentForm";
+import InstrumentForm from "../components/submission/InstrumentForm";
 import "../components/StandardSubmission.css";
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
