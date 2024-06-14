@@ -158,7 +158,12 @@ class XASStandard(XASStandardInput, table=True):
     element: Element = Relationship(sa_relationship_kwargs={"lazy": "joined"})
     edge: Edge = Relationship(sa_relationship_kwargs={"lazy": "joined"})
     beamline: Beamline = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
-    submitter: Person = Relationship(sa_relationship_kwargs={"lazy": "selectin", "foreign_keys": "[XASStandard.submitter_id]"})
+    submitter: Person = Relationship(
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "foreign_keys": "[XASStandard.submitter_id]",
+        }
+    )
 
 
 class XASStandardResponse(XASStandardInput):
@@ -168,6 +173,7 @@ class XASStandardResponse(XASStandardInput):
     beamline: BeamlineResponse
     submitter_id: int
 
+
 class AdminXASStandardResponse(XASStandardResponse):
     submitter: Person
 
@@ -176,4 +182,4 @@ class XASStandardAdminReviewInput(SQLModel):
     reviewer_comments: Optional[str] = None
     review_status: ReviewStatus
     standard_id: int
-    #get fedid from person table
+    # get fedid from person table

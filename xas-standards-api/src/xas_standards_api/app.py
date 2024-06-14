@@ -1,6 +1,6 @@
 import datetime
 import os
-from typing import Annotated, List, Optional, Union
+from typing import Annotated, List, Optional
 
 import requests
 from fastapi import (
@@ -123,7 +123,9 @@ async def get_current_user(
 
 
 @app.get("/api/user")
-async def check( session: Session = Depends(get_session), user_id: str = Depends(get_current_user)):
+async def check(
+    session: Session = Depends(get_session), user_id: str = Depends(get_current_user)
+):
 
     statement = select(Person).where(Person.identifier == user_id)
     person = session.exec(statement).first()
@@ -168,37 +170,41 @@ def read_standards(
 ) -> CursorPage[XASStandardResponse]:
 
     statement = select(XASStandard).where(
-        XASStandard.review_status == ReviewStatus.approved)
+        XASStandard.review_status == ReviewStatus.approved
+    )
 
     if element:
         statement = statement.join(Element, XASStandard.element_z == Element.z).where(
             Element.symbol == element
         )
 
-
     return paginate(
-        session, statement.order_by(XASStandard.id),
+        session,
+        statement.order_by(XASStandard.id),
     )
+
 
 @app.get("/api/admin/standards")
 def read_standards_admin(
     session: Session = Depends(get_session),
     user_id: str = Depends(get_current_user),
 ) -> CursorPage[AdminXASStandardResponse]:
-    
+
     statement = select(Person).where(Person.identifier == user_id)
     person = session.exec(statement).first()
 
     if person is None or not person.admin:
-         raise HTTPException(status_code=401, detail=f"No standard with id={user_id}")
-    
+        raise HTTPException(status_code=401, detail=f"No standard with id={user_id}")
+
     if not person.admin:
         raise HTTPException(status_code=401, detail=f"User {user_id} not admin")
 
-
-    statement = select(XASStandard).where(XASStandard.review_status == ReviewStatus.pending)
+    statement = select(XASStandard).where(
+        XASStandard.review_status == ReviewStatus.pending
+    )
 
     return paginate(session, statement.order_by(XASStandard.id))
+
 
 @app.get("/api/standards/{id}")
 async def read_standard(
@@ -251,16 +257,18 @@ def add_standard_file(
 
 
 @app.patch("/api/standards")
-def submit_review(review: XASStandardAdminReviewInput,
-                 session: Session = Depends(get_session),
-                 user_id: str = Depends(get_current_user)):
-    
+def submit_review(
+    review: XASStandardAdminReviewInput,
+    session: Session = Depends(get_session),
+    user_id: str = Depends(get_current_user),
+):
+
     statement = select(Person).where(Person.identifier == user_id)
     person = session.exec(statement).first()
 
     if person is None or not person.admin:
-         raise HTTPException(status_code=401, detail=f"No standard with id={user_id}")
-    
+        raise HTTPException(status_code=401, detail=f"No standard with id={user_id}")
+
     if not person.admin:
         raise HTTPException(status_code=401, detail=f"User {user_id} not admin")
     return update_review(session, review, person.id)

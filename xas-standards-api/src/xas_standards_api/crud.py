@@ -49,7 +49,6 @@ def get_standard(session, id) -> XASStandard:
         return standard
     else:
         raise HTTPException(status_code=404, detail=f"No standard with id={id}")
-    
 
 
 def update_review(session, review, reviewer_id):
