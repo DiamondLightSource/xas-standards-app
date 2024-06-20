@@ -19,6 +19,7 @@ if env_value and env_value == "development":
     print("RUNNING IN DEV MODE")
     dev = True
 
+
 async def get_current_user(
     auth: HTTPAuthorizationCredentials = Depends(get_bearer_token),
 ):

@@ -11,11 +11,13 @@ class FacilityResponse(SQLModel):
     city: str
     country: str
 
+
 class BeamlineResponse(SQLModel):
     id: int
     name: str
     notes: str
     facility: FacilityResponse
+
 
 class XASStandardResponse(XASStandardInput):
     id: int | None
@@ -28,12 +30,9 @@ class XASStandardResponse(XASStandardInput):
 class AdminXASStandardResponse(XASStandardResponse):
     submitter: Person
 
+
 class MetadataResponse(SQLModel):
     beamlines: List[BeamlineResponse]
     elements: List[Element]
     edges: List[Edge]
     licences: List[str]
-
-
-
-

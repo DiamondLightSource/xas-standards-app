@@ -16,6 +16,7 @@ class LicenceType(enum.Enum):
     cc_0 = "cc_0"
     logged_in_only = "logged_in_only"
 
+
 class PersonInput(SQLModel):
     identifier: str = Field(index=True, unique=True)
 
@@ -23,7 +24,6 @@ class PersonInput(SQLModel):
 class Person(PersonInput, table=True):
     id: int | None = Field(primary_key=True, default=None)
     admin: bool = False
-
 
 
 class Element(SQLModel, table=True):
@@ -126,6 +126,7 @@ class XASStandard(XASStandardInput, table=True):
             "foreign_keys": "[XASStandard.submitter_id]",
         }
     )
+
 
 class XASStandardAdminReviewInput(SQLModel):
     reviewer_comments: Optional[str] = None

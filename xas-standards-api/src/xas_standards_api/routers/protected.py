@@ -21,12 +21,13 @@ from ..models.models import XASStandard, XASStandardAdminReviewInput, XASStandar
 
 router = APIRouter()
 
+
 @router.get("/api/user")
 async def check(
     session: Session = Depends(get_session), user_id: str = Depends(get_current_user)
 ):
 
-    return get_user(session,user_id)
+    return get_user(session, user_id)
 
 
 @router.post("/api/standards")
@@ -70,6 +71,7 @@ def add_standard_file(
     )
 
     return add_new_standard(session, xdi_file, form_input, additional_files)
+
 
 @router.patch("/api/standards")
 def submit_review(

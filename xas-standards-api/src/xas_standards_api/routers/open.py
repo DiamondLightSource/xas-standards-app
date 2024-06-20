@@ -13,6 +13,7 @@ from ..models.response_models import (
 
 router = APIRouter()
 
+
 @router.get("/api/standards/{id}")
 async def read_standard(
     id: int, session: Session = Depends(get_session)
@@ -31,7 +32,8 @@ def read_standards(
     element: str | None = None,
 ) -> CursorPage[XASStandardResponse]:
 
-    return read_standards_page(session,element)
+    return read_standards_page(session, element)
+
 
 @router.get("/api/data/{id}")
 async def read_data(
@@ -42,4 +44,3 @@ async def read_data(
         return get_file(session, id)
 
     return get_data(session, id)
-

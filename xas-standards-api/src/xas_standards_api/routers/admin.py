@@ -22,4 +22,4 @@ def read_standards_admin(
     user_id: str = Depends(get_current_user),
 ) -> CursorPage[AdminXASStandardResponse]:
 
-    return get_standards_admin(session,user_id)
+    return get_standards_admin(session, user_id)
