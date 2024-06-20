@@ -1,25 +1,69 @@
 import uuid
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Query
 from fastapi.responses import FileResponse, PlainTextResponse
+from fastapi_pagination.cursor import CursorPage
+from fastapi_pagination.ext.sqlalchemy import paginate
 from larch.io import xdi
 from larch.xafs import pre_edge, set_xafsGroup
-from sqlmodel import select
+from sqlmodel import Session, select
 
-from .schemas import (
+from .models.models import (
     Beamline,
     Edge,
     Element,
     LicenceType,
     Person,
     PersonInput,
+    ReviewStatus,
     XASStandard,
+    XASStandardAdminReviewInput,
     XASStandardData,
     XASStandardDataInput,
     XASStandardInput,
 )
+from .models.response_models import XASStandardResponse
+
+CursorPage = CursorPage.with_custom_options(
+    size=Query(10, ge=1, le=100),
+)
+
 
 pvc_location = "/scratch/xas-standards-pretend-pvc/"
+
+
+def patch_standard_review(
+    review: XASStandardAdminReviewInput, session: Session, user_id: str
+):
+    statement = select(Person).where(Person.identifier == user_id)
+    person = session.exec(statement).first()
+
+    if person is None or not person.admin:
+        raise HTTPException(status_code=401, detail=f"No standard with id={user_id}")
+
+    if not person.admin:
+        raise HTTPException(status_code=401, detail=f"User {user_id} not admin")
+    return update_review(session, review, person.id)
+
+
+def read_standards_page(
+    session: Session,
+    element: str | None = None,
+) -> CursorPage[XASStandardResponse]:
+
+    statement = select(XASStandard).where(
+        XASStandard.review_status == ReviewStatus.approved
+    )
+
+    if element:
+        statement = statement.join(Element, XASStandard.element_z == Element.z).where(
+            Element.symbol == element
+        )
+
+    return paginate(
+        session,
+        statement.order_by(XASStandard.id),
+    )
 
 
 def get_beamline_names(session):
@@ -60,6 +104,15 @@ def update_review(session, review, reviewer_id):
     session.commit()
     session.refresh(standard)
     return standard
+
+
+def get_user(session, user_id):
+    statement = select(Person).where(Person.identifier == user_id)
+    person = session.exec(statement).first()
+
+    admin = person is not None and person.admin
+
+    return {"user": user_id, "admin": admin}
 
 
 def select_or_create_person(session, identifier):
@@ -178,3 +231,23 @@ def get_data(session, id):
         "mufluor": fluor_out,
         "murefer": ref_out,
     }
+
+
+def get_standards_admin(
+    session: Session,
+    user_id: str,
+):
+    statement = select(Person).where(Person.identifier == user_id)
+    person = session.exec(statement).first()
+
+    if person is None or not person.admin:
+        raise HTTPException(status_code=401, detail=f"No standard with id={user_id}")
+
+    if not person.admin:
+        raise HTTPException(status_code=401, detail=f"User {user_id} not admin")
+
+    statement = select(XASStandard).where(
+        XASStandard.review_status == ReviewStatus.pending
+    )
+
+    return paginate(session, statement.order_by(XASStandard.id))
