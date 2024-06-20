@@ -2,19 +2,19 @@ import datetime
 import enum
 from typing import List, Optional
 
-from pydantic import BaseModel
 from sqlmodel import Column, Enum, Field, Relationship, SQLModel
 
 
-class Mono(BaseModel):
-    name: Optional[str] = None
-    d_spacing: Optional[str] = None
+class ReviewStatus(enum.Enum):
+    pending = "pending"
+    approved = "approved"
+    rejected = "rejected"
 
 
-class Sample(BaseModel):
-    name: Optional[str] = None
-    prep: Optional[str] = None
-
+class LicenceType(enum.Enum):
+    cc_by = "cc_by"
+    cc_0 = "cc_0"
+    logged_in_only = "logged_in_only"
 
 class PersonInput(SQLModel):
     identifier: str = Field(index=True, unique=True)
@@ -25,24 +25,19 @@ class Person(PersonInput, table=True):
     admin: bool = False
 
 
-class ElementInput(SQLModel):
-    symbol: str = Field(unique=True)
 
-
-class Element(ElementInput, table=True):
+class Element(SQLModel, table=True):
     __tablename__: str = "element"
 
     z: int = Field(primary_key=True, unique=True)
+    symbol: str = Field(unique=True)
     name: str = Field(unique=True)
 
 
-class EdgeInput(SQLModel):
-    name: str = Field(unique=True)
-
-
-class Edge(EdgeInput, table=True):
+class Edge(SQLModel, table=True):
     __tablename__: str = "edge"
 
+    name: str = Field(unique=True)
     id: int = Field(primary_key=True)
     level: str = Field(unique=True)
 
@@ -78,27 +73,6 @@ class Beamline(SQLModel, table=True):
     )
 
 
-class FacilityResponse(SQLModel):
-    fullname: str
-    name: str
-    city: str
-    country: str
-
-
-class BeamlineResponse(SQLModel):
-    id: int
-    name: str
-    notes: str
-    facility: FacilityResponse
-
-
-class MetadataResponse(SQLModel):
-    beamlines: List[BeamlineResponse]
-    elements: List[Element]
-    edges: List[Edge]
-    licences: List[str]
-
-
 class XASStandardDataInput(SQLModel):
     original_filename: str
     transmission: bool
@@ -114,18 +88,6 @@ class XASStandardData(XASStandardDataInput, table=True):
     id: int | None = Field(primary_key=True, default=None)
 
     xas_standard: "XASStandard" = Relationship(back_populates="xas_standard_data")
-
-
-class ReviewStatus(enum.Enum):
-    pending = "pending"
-    approved = "approved"
-    rejected = "rejected"
-
-
-class LicenceType(enum.Enum):
-    cc_by = "cc_by"
-    cc_0 = "cc_0"
-    logged_in_only = "logged_in_only"
 
 
 class XASStandardInput(SQLModel):
@@ -164,19 +126,6 @@ class XASStandard(XASStandardInput, table=True):
             "foreign_keys": "[XASStandard.submitter_id]",
         }
     )
-
-
-class XASStandardResponse(XASStandardInput):
-    id: int | None
-    element: ElementInput
-    edge: EdgeInput
-    beamline: BeamlineResponse
-    submitter_id: int
-
-
-class AdminXASStandardResponse(XASStandardResponse):
-    submitter: Person
-
 
 class XASStandardAdminReviewInput(SQLModel):
     reviewer_comments: Optional[str] = None
