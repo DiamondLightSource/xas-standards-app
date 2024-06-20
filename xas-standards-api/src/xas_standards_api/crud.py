@@ -133,7 +133,7 @@ def get_file(session, id):
     return FileResponse(xdi_location)
 
 
-def get_file_as_text(session,id):
+def get_file_as_text(session, id):
     xdi_location = get_filepath(session, id)
     with open(xdi_location) as fh:
         file = fh.read()
