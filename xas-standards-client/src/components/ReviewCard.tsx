@@ -35,6 +35,7 @@ export default function ReviewCard(props: {standard : AdminXASStandard}) {
     return (
 <Card>
     <CardContent>
+      <Stack spacing={2}>
         <Typography>
             Submitted by: {props.standard.submitter.identifier}
         </Typography>
@@ -76,6 +77,7 @@ export default function ReviewCard(props: {standard : AdminXASStandard}) {
         <Button type="submit">Submit</Button>
         </Stack>
         </Box>
+        </Stack>
     </CardContent>
 </Card>
     )

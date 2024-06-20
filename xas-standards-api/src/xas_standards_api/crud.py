@@ -1,7 +1,7 @@
 import uuid
 
 from fastapi import HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, PlainTextResponse
 from larch.io import xdi
 from larch.xafs import pre_edge, set_xafsGroup
 from sqlmodel import select
@@ -131,6 +131,14 @@ def get_filepath(session, id):
 def get_file(session, id):
     xdi_location = get_filepath(session, id)
     return FileResponse(xdi_location)
+
+
+def get_file_as_text(session,id):
+    xdi_location = get_filepath(session, id)
+    with open(xdi_location) as fh:
+        file = fh.read()
+
+        return PlainTextResponse(file)
 
 
 def get_norm(energy, group, type):

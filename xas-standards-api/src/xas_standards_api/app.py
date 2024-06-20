@@ -26,6 +26,7 @@ from .crud import (
     add_new_standard,
     get_data,
     get_file,
+    get_file_as_text,
     get_metadata,
     get_standard,
     select_all,
@@ -284,6 +285,12 @@ async def read_data(
 
     return get_data(session, id)
 
+@app.get("/api/admin/data/{id}")
+async def read_admin_data(
+    id: int, session: Session = Depends(get_session)
+):
+
+    return get_file_as_text(session, id)
 
 @app.post("/uploadfiles/")
 async def create_upload_files(

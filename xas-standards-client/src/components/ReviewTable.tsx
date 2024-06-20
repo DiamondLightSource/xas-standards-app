@@ -9,6 +9,7 @@ import {AdminXASStandard, XASStandard } from "../models";
 import { useState, useEffect } from "react";
 
 import axios from "axios";
+import ReviewTab from "./ReviewTab";
 
 
 const standards_url = "/api/admin/standards";
@@ -63,10 +64,8 @@ export default function ReviewTable(props : {
         setSelectedStandard={setSelectedStandard} 
         setCurrent={setCurrent}
         prevNext={prevNext}/>
-        {selectedStandard && <>
-        <StandardMetadataCard standard={selectedStandard} />
-        <ReviewCard standard={selectedStandard}/>
-        </>
+        {selectedStandard && 
+        <ReviewTab standard={selectedStandard}/>
       }
         </Stack>
     )
