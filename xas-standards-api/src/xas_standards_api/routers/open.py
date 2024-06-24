@@ -1,11 +1,12 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi_pagination.cursor import CursorPage
 from sqlmodel import Session
 
 from ..crud import get_data, get_file, get_metadata, get_standard, read_standards_page
 from ..database import get_session
+from ..models.models import ReviewStatus
 from ..models.response_models import (
     MetadataResponse,
     XASStandardResponse,
@@ -31,7 +32,6 @@ def read_standards(
     session: Session = Depends(get_session),
     element: str | None = None,
 ) -> CursorPage[XASStandardResponse]:
-
     return read_standards_page(session, element)
 
 
@@ -39,6 +39,10 @@ def read_standards(
 async def read_data(
     id: int, format: Optional[str] = "json", session: Session = Depends(get_session)
 ):
+    standard = get_standard(session, id)
+
+    if standard.review_status != ReviewStatus.approved:
+        raise HTTPException(status_code=401, detail="Standard data not available")
 
     if format == "xdi":
         return get_file(session, id)
