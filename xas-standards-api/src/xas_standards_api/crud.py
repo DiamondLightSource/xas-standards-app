@@ -50,7 +50,6 @@ def read_standards_page(
     session: Session,
     element: str | None = None,
 ) -> CursorPage[XASStandardResponse]:
-
     statement = select(XASStandard).where(
         XASStandard.review_status == ReviewStatus.approved
     )
@@ -89,7 +88,10 @@ def get_metadata(session):
 
 def get_standard(session, id) -> XASStandard:
     standard = session.get(XASStandard, id)
+
     if standard:
+        if standard.review_status != ReviewStatus.approved:
+            raise HTTPException(status_code=401, detail="Standard not available")
         return standard
     else:
         raise HTTPException(status_code=404, detail=f"No standard with id={id}")
@@ -132,7 +134,6 @@ def select_or_create_person(session, identifier):
 
 
 def add_new_standard(session, file1, xs_input: XASStandardInput, additional_files):
-
     tmp_filename = pvc_location + str(uuid.uuid4())
 
     with open(tmp_filename, "wb") as ntf:
@@ -166,7 +167,6 @@ def add_new_standard(session, file1, xs_input: XASStandardInput, additional_file
 
 
 def get_filepath(session, id):
-
     standard = session.get(XASStandard, id)
     if not standard:
         raise HTTPException(status_code=404, detail=f"No standard with id={id}")
@@ -186,7 +186,10 @@ def get_file(session, id):
     return FileResponse(xdi_location)
 
 
-def get_file_as_text(session, id):
+def get_file_as_text(session, id, user_id):
+    # only admins can see original file
+    is_admin_user(session, user_id)
+
     xdi_location = get_filepath(session, id)
     with open(xdi_location) as fh:
         file = fh.read()
@@ -195,7 +198,6 @@ def get_file_as_text(session, id):
 
 
 def get_norm(energy, group, type):
-
     if type in group:
         r = group[type]
         tr = set_xafsGroup(None)
@@ -208,7 +210,6 @@ def get_norm(energy, group, type):
 
 
 def get_data(session, id):
-
     xdi_location = get_filepath(session, id)
 
     xdi_data = xdi.read_xdi(xdi_location)
@@ -237,17 +238,25 @@ def get_standards_admin(
     session: Session,
     user_id: str,
 ):
-    statement = select(Person).where(Person.identifier == user_id)
-    person = session.exec(statement).first()
-
-    if person is None or not person.admin:
-        raise HTTPException(status_code=401, detail=f"No standard with id={user_id}")
-
-    if not person.admin:
-        raise HTTPException(status_code=401, detail=f"User {user_id} not admin")
+    is_admin_user(session, user_id)
 
     statement = select(XASStandard).where(
         XASStandard.review_status == ReviewStatus.pending
     )
 
     return paginate(session, statement.order_by(XASStandard.id))
+
+
+def is_admin_user(session: Session, user_id: str):
+    statement = select(Person).where(Person.identifier == user_id)
+    person = session.exec(statement).first()
+
+    if person is None:
+        raise HTTPException(
+            status_code=401, detail=f"No person associated with id {user_id}"
+        )
+
+    if not person.admin:
+        raise HTTPException(status_code=401, detail=f"User {user_id} not admin")
+
+    return True

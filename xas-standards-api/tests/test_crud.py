@@ -5,15 +5,15 @@ from fastapi import HTTPException
 from sqlmodel import Session
 
 from xas_standards_api import crud
-from xas_standards_api.models.models import XASStandard
+from xas_standards_api.models.models import ReviewStatus, XASStandard
 
 
 def test_get_standard():
-
     mock_session = create_autospec(Session, instance=True)
 
     test_id = 0
     result = XASStandard()
+    result.review_status = ReviewStatus.approved
 
     # Session returns None, i.e. no standard for id
     mock_session.get = Mock(return_value=None)
