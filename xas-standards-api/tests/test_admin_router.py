@@ -2,14 +2,11 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
+from utils import build_test_database
 from xas_standards_api.app import app
 from xas_standards_api.auth import get_current_user
 from xas_standards_api.database import get_session
-from xas_standards_api.models.models import Beamline, Edge, Element, Facility, Person
-
 from xas_standards_api.models.response_models import AdminXASStandardResponse
-
-from utils import build_test_database
 
 
 def test_admin_read_permissions():

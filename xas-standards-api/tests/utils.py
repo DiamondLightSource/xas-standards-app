@@ -1,16 +1,16 @@
-from sqlmodel import Session
-
 from datetime import datetime
 
+from sqlmodel import Session
+
 from xas_standards_api.models.models import (
-    Person,
-    Element,
-    Edge,
-    Facility,
     Beamline,
-    XASStandard,
+    Edge,
+    Element,
+    Facility,
     LicenceType,
+    Person,
     ReviewStatus,
+    XASStandard,
     XASStandardData,
 )
 
