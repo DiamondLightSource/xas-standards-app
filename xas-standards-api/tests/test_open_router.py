@@ -63,7 +63,7 @@ def test_read_metadata():
 
         # check cant get unreviewed data from open endpoint
         response = client.get("/api/data/2")
-        assert response.status_code == 401
+        assert response.status_code == 403
 
         # check cant get id that doesnt exist
         response = client.get("/api/data/3")
@@ -73,7 +73,7 @@ def test_read_metadata():
         assert response.status_code == 200
 
         response = client.get("/api/standards/2")
-        assert response.status_code == 401
+        assert response.status_code == 403
 
         response = client.get("/api/standards/3")
         assert response.status_code == 404

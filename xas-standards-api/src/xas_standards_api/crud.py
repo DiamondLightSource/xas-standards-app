@@ -91,7 +91,7 @@ def get_standard(session, id) -> XASStandard:
 
     if standard:
         if standard.review_status != ReviewStatus.approved:
-            raise HTTPException(status_code=401, detail="Standard not available")
+            raise HTTPException(status_code=403, detail="Standard not available")
         return standard
     else:
         raise HTTPException(status_code=404, detail=f"No standard with id={id}")

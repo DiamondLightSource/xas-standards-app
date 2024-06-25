@@ -45,7 +45,7 @@ def test_admin_read_permissions():
 
         # check cant get data from open endpoint
         response = client.get("/api/data/2")
-        assert response.status_code == 401
+        assert response.status_code == 403
 
         # now try admin user
         app.dependency_overrides.clear()
