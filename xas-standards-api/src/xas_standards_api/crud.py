@@ -1,3 +1,4 @@
+import os
 import uuid
 
 from fastapi import HTTPException, Query
@@ -28,8 +29,7 @@ CursorPage = CursorPage.with_custom_options(
     size=Query(10, ge=1, le=100),
 )
 
-
-pvc_location = "/scratch/xas-standards-pretend-pvc/"
+pvc_location = os.environ.get("PVC_LOCATION", "/scratch/xas-standards-pretend-pvc/")
 
 
 def patch_standard_review(
