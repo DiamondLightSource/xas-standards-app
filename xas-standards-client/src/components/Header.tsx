@@ -10,14 +10,15 @@ import ListItem from "@mui/material/ListItem";
 import List from "@mui/material/List";
 import ListItemText from "@mui/material/ListItemText";
 import Stack from "@mui/material/Stack";
-import {Switch } from "@mui/material";
+import {Checkbox, Switch } from "@mui/material";
 
 import { NavLink } from "react-router-dom";
 
 import DiamondIcon from "./DiamondIcon";
 
-import ColorModeContext from "../contexts/ColorModeContext";
 import UserIcon from "./UserIcon";
+import LightModeIcon from "./LightModeIcon";
+import DarkModeIcon from "./DarkModeIcon";
 
 function NavListItem(props: { to: string; label: string }) {
   const to = props.to;
@@ -40,7 +41,7 @@ function NavListItem(props: { to: string; label: string }) {
   );
 }
 
-export default function Header() {
+export default function Header(props : {colorMode : string; toggleColorMode : any }) {
   const user = useContext(UserContext);
   console.log(user);
   const loggedIn = user != null;
@@ -53,8 +54,6 @@ export default function Header() {
   };
 
   Object.keys(navitems).forEach((k) => console.log(k));
-
-  const colorMode = useContext(ColorModeContext);
 
   return (
     <AppBar style={{ position: "static" }}>
@@ -89,7 +88,7 @@ export default function Header() {
         </List>
         </Stack>
         <Stack direction="row" alignItems={"center"}>
-        <Switch onChange={colorMode.toggleColorMode}></Switch>
+        <Checkbox icon={<LightModeIcon />} checkedIcon={<DarkModeIcon />} checked={props.colorMode === "dark"} onChange={props.toggleColorMode.toggleColorMode}></Checkbox>
         {!loggedIn ? (
             <NavListItem to="/login" label="Login" />
           ) : (        <Stack alignItems={"flex-end"}>

@@ -11,16 +11,18 @@ import LogInPage from "./components/LogInPage.tsx";
 import RequireAuth from "./components/RequireAuth.tsx";
 
 import { CssBaseline } from "@mui/material";
+import {useMediaQuery} from "@mui/material";
 
 import { useState, useMemo } from "react";
 import { Stack } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-import ColorModeContext from "./contexts/ColorModeContext.tsx";
 import ReviewPage from "./components/ReviewPage.tsx";
 
 function App() {
-  const [mode, setMode] = useState<"light" | "dark">("light");
+
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const [mode, setMode] = useState<"light" | "dark">(prefersDarkMode ? "dark" : "light");
   const colorMode = useMemo(
     () => ({
       toggleColorMode: () => {
@@ -41,12 +43,11 @@ function App() {
   );
 
   return (
-    <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Stack height="100vh" width="100vw" spacing={1}>
           <UserProvider>
-            <Header />
+            <Header colorMode={mode} toggleColorMode={colorMode}/>
             <MetadataProvider>
               <Routes>
                 <Route path="/" element={<WelcomePage />} />
@@ -67,7 +68,6 @@ function App() {
           </UserProvider>
         </Stack>
       </ThemeProvider>
-    </ColorModeContext.Provider>
   );
 }
 
