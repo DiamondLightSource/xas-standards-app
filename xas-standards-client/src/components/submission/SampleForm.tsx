@@ -2,11 +2,11 @@ import { Grid, TextField } from "@mui/material";
 
 function SampleForm(props: {
   sampleName: string;
-  setSampleName: React.Dispatch<React.SetStateAction<string>>;
+  setSampleName: (name: string) => void;
   sampleComp: string;
-  setSampleComp: React.Dispatch<React.SetStateAction<string>>;
+  setSampleComp: (composition: string) => void;
   samplePrep: string;
-  setSamplePrep: React.Dispatch<React.SetStateAction<string>>;
+  setSamplePrep: (preparation: string) => void;
 }) {
   const sampleName = props.sampleName;
   const setSampleName = props.setSampleName;
@@ -20,7 +20,7 @@ function SampleForm(props: {
       <legend>Sample Information</legend>
       <Grid item xs={6}>
         <TextField
-        margin="dense" 
+          margin="dense"
           id="sample-name"
           label="Sample Name"
           variant="outlined"
@@ -30,7 +30,7 @@ function SampleForm(props: {
       </Grid>
       <Grid item xs={6}>
         <TextField
-        margin="dense" 
+          margin="dense"
           id="composition"
           label="Sample Composition"
           variant="outlined"
@@ -40,7 +40,7 @@ function SampleForm(props: {
       </Grid>
       <Grid item xs={6}>
         <TextField
-        margin="dense" 
+          margin="dense"
           id="preparation"
           label="Sample Preparation"
           variant="outlined"
@@ -49,7 +49,12 @@ function SampleForm(props: {
         />
       </Grid>
       <Grid item xs={6}>
-        <TextField margin="dense"  id="sampleform" label="Sample Form" variant="outlined" />
+        <TextField
+          margin="dense"
+          id="sampleform"
+          label="Sample Form"
+          variant="outlined"
+        />
       </Grid>
     </Grid>
   );

@@ -22,7 +22,7 @@ function StandardViewer() {
 
   const { elements } = useContext(MetadataContext);
 
-  function getData(setXASData: React.Dispatch<XASData>) {
+  function getData() {
     return (id: number) => {
       axios.get(data_url + "/" + id).then((response) => {
         const output: XASData = response.data as XASData;
@@ -40,7 +40,7 @@ function StandardViewer() {
     };
   }
 
-  const onClick = getData(setXASData);
+  const onClick = getData();
 
   return (
     <Grid height="100%" container>

@@ -9,7 +9,7 @@ import { useState } from "react";
 
 import { XASData, AdminXASStandard } from "../models";
 
-const data_url = "/api/data";
+const data_url = "/api/admin/data";
 
 function ReviewPage() {
   const [standards, setStandardsList] = useState<AdminXASStandard[]>([]);
@@ -20,11 +20,9 @@ function ReviewPage() {
   const [showRef, setShowRef] = useState(false);
   const [contains, setContains] = useState([false, false, false]);
 
-  
-
-  function getData(setXASData: React.Dispatch<XASData>) {
+  function getData() {
     return (id: number) => {
-      axios.get(data_url + "/" + id).then((response) => {
+      axios.get(data_url + "/" + id + "/?format=json").then((response) => {
         const output: XASData = response.data as XASData;
         const containsTrans = output != null && output.mutrans.length != 0;
         const containsFluor = output != null && output.mufluor.length != 0;
@@ -40,7 +38,7 @@ function ReviewPage() {
     };
   }
 
-  const onClick = getData(setXASData);
+  const onClick = getData();
   return (
     <Grid height="100%" container>
       <Grid item xs={5} padding={1}>

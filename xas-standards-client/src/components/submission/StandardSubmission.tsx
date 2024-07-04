@@ -16,7 +16,18 @@ import { useNavigate } from "react-router-dom";
 
 import VisuallyHiddenInput from "./VisuallyHiddenInput";
 
-import { Box, Typography, Button, Grid, Select, MenuItem,InputLabel, FormControl, FormControlLabel, Checkbox } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  Grid,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
 
 const standards_url = "/api/standards";
 
@@ -154,7 +165,7 @@ function StandardSubmission() {
         className="submissionpage"
         id="submissionform"
         onSubmit={handleSubmit}
-        sx={{width: 1/2}}
+        sx={{ width: 1 / 2 }}
         gap={5}
       >
         <Box component="fieldset">
@@ -162,12 +173,16 @@ function StandardSubmission() {
           <Button
             variant="contained"
             type="submit"
-            role={undefined}S
+            role={undefined}
             tabIndex={-1}
             component="label"
           >
-        Upload
-          <VisuallyHiddenInput type="file" name="file1" onChange={handleFile}/>
+            Upload
+            <VisuallyHiddenInput
+              type="file"
+              name="file1"
+              onChange={handleFile}
+            />
           </Button>
           <Typography>
             Submitted file must be in xdi format and contain an energy column,
@@ -222,30 +237,34 @@ function StandardSubmission() {
           handleFile2={handleFile2}
         />
         <Grid item xs={6}>
-        <FormControl fullWidth>
-        <InputLabel margin="dense" id="licence">Licence</InputLabel>
-          <Select
-            name="licence"
-            id="licence"
-            label="Licence"
-            value={licence}
-            onChange={(e) => setLicence(e.target.value)}
-          >
-                        {licences.map((x, y) => (
-              <MenuItem key={y} value={x}>
-                {x}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Grid item xs={6}>
-        <FormControlLabel required control={<Checkbox />} label="By ticking I confirm info is correct and I grant permission for
-            diamond to publish data under selected licence" />
-            </Grid>
+          <FormControl fullWidth>
+            <InputLabel margin="dense" id="licence">
+              Licence
+            </InputLabel>
+            <Select
+              name="licence"
+              id="licence"
+              label="Licence"
+              value={licence}
+              onChange={(e) => setLicence(e.target.value)}
+            >
+              {licences.map((x, y) => (
+                <MenuItem key={y} value={x}>
+                  {x}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Grid item xs={6}>
+            <FormControlLabel
+              required
+              control={<Checkbox />}
+              label="By ticking I confirm info is correct and I grant permission for
+            diamond to publish data under selected licence"
+            />
+          </Grid>
         </Grid>
 
-
-      
         <Button type="submit">Submit</Button>
       </Box>
     </Box>

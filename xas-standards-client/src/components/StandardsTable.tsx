@@ -17,8 +17,8 @@ const nResults = 7;
 function StandardsTable(props: {
   standards: XASStandard[];
   elements: Element[];
-  setStandards: React.Dispatch<XASStandard[]>;
-  updatePlot: React.Dispatch<number>;
+  setStandards: (standards : XASStandard[]) => void;
+  updatePlot: (id: number) => void;
 }): JSX.Element {
   const [selectedStandard, setSelectedStandard] = useState<XASStandard>();
   const [selectedElement, setSelectedElement] = useState<number>(0);

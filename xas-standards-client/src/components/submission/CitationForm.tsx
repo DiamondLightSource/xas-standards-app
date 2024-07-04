@@ -6,11 +6,11 @@ import { Grid, TextField, Button, Typography } from "@mui/material";
 const crossref_url = "https://api.crossref.org/works/";
 const mailto = "?mailto=dataanalysis@diamond.ac.uk";
 
-function CitationForm(props : {
-  citation : string;
-  setCitation: React.Dispatch<React.SetStateAction<string>>;
+function CitationForm(props: {
+  citation: string;
+  setCitation: (citation: string) => void;
   doi: string;
-  setDOI: React.Dispatch<React.SetStateAction<string>>;
+  setDOI: (doi: string) => void;
 }) {
   const citation = props.citation;
   const setCitation = props.setCitation;
@@ -60,13 +60,11 @@ function CitationForm(props : {
         />
       </Grid>
       <Grid item xs={6}>
-      <Button onClick={validateDOI}>
-        Validate DOI
-      </Button>
+        <Button onClick={validateDOI}>Validate DOI</Button>
       </Grid>
       <Grid item xs={6}>
-      <Typography>{isValidDOI ? "Valid DOI" : "Invalid DOI"}</Typography>
-    </Grid>
+        <Typography>{isValidDOI ? "Valid DOI" : "Invalid DOI"}</Typography>
+      </Grid>
     </Grid>
   );
 }

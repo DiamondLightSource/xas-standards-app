@@ -1,12 +1,19 @@
-import { Select, Box, MenuItem, FormControl, InputLabel, Stack } from "@mui/material";
+import {
+  Select,
+  Box,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Stack,
+} from "@mui/material";
 
 import { Element, Edge } from "../../models";
 
 function ElementForm(props: {
   elementId: number;
-  setElementId: React.Dispatch<React.SetStateAction<number>>;
+  setElementId: (id: number) => void;
   edgeId: number;
-  setEdgeId: React.Dispatch<React.SetStateAction<number>>;
+  setEdgeId: (id: number) => void;
   elements: Element[];
   edges: Edge[];
 }) {
@@ -24,7 +31,7 @@ function ElementForm(props: {
         <FormControl>
           <InputLabel id="Element">Element</InputLabel>
           <Select
-          sx={{ minWidth: 100 }}
+            sx={{ minWidth: 100 }}
             name="Element"
             id="Element"
             label="Element"
@@ -42,7 +49,7 @@ function ElementForm(props: {
         <FormControl>
           <InputLabel id="Edge">Edge</InputLabel>
           <Select
-          sx={{ minWidth: 100 }}
+            sx={{ minWidth: 100 }}
             name="Edge"
             id="Edge"
             label="Edge"
@@ -56,7 +63,7 @@ function ElementForm(props: {
             ))}
           </Select>
         </FormControl>
-        </Stack>
+      </Stack>
     </Box>
   );
 }
