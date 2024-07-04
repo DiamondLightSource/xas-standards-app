@@ -35,9 +35,9 @@ function XASChart(props: {
   showTrans: boolean;
   showFluor: boolean;
   showRef: boolean;
-  setShowTrans: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowFluor: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowRef: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowTrans: (show: boolean) => void;
+  setShowFluor: (show: boolean) => void;
+  setShowRef: (show: boolean) => void;
   contains: boolean[];
 }) {
   const curveOptions: CurveType[] = Object.values(

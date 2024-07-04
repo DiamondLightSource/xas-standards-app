@@ -1,6 +1,4 @@
 import StandardsTableView from "./StandardsTableView"
-import StandardMetadataCard from "./StandardMetadataCard";
-import ReviewCard from "./ReviewCard";
 
 import { Stack } from "@mui/material";
 
@@ -18,8 +16,8 @@ const nResults = 7;
 
 export default function ReviewTable(props : {
     standards: AdminXASStandard[];
-    setStandards: React.Dispatch<XASStandard[]>;
-    updatePlot: React.Dispatch<number>;
+    setStandards: (standards : XASStandard[]) => void;
+    updatePlot: (id : number) => void;
 }) {
 
     const [selectedStandard, setSelectedStandard] = useState<AdminXASStandard>();

@@ -6,7 +6,7 @@ import { tableCellClasses } from "@mui/material/TableCell";
 import { styled } from "@mui/material/styles";
 import { useState } from "react";
 
-import { XASStandard } from "../models";
+import { XASStandard, AdminXASStandard } from "../models";
 
 
 const nResults = 7;
@@ -32,14 +32,10 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     },
   }));
   
-
-
-
-
 function StandardMetadata(props: {
     key: number;
     xasstandard: XASStandard | null;
-    selected: XASStandard | undefined;
+    selected: AdminXASStandard | XASStandard | undefined;
     updatePlot: React.Dispatch<XASStandard>;
     selectedRow: number;
     setSelectedRow: React.Dispatch<React.SetStateAction<number>>;
@@ -79,19 +75,20 @@ function StandardMetadata(props: {
 
 export default function StandardsTableView(props : {
     standards : XASStandard[];
-    updatePlot : React.Dispatch<number>;
+    updatePlot : (id: number) => void;
     selectedStandard: XASStandard | undefined;
-    setSelectedStandard : React.Dispatch<React.SetStateAction<XASStandard | undefined>>;
-    setCurrent: React.Dispatch<React.SetStateAction<string | null>>;
+    setSelectedStandard : (x: XASStandard | AdminXASStandard | undefined)  => void;
+    setCurrent: (cursor : string | null) => void;
     prevNext: string[] | null}) {
+
     const [selectedRow, setSelectedRow] = useState(-1);
 
     const nextPage = () => {
-        props.setCurrent(props.prevNext[1]);
+        props.setCurrent(props.prevNext == null ? null : props.prevNext[1]);
       };
     
       const prevPage = () => {
-        props.setCurrent(props.prevNext[0]);
+        props.setCurrent(props.prevNext == null ? null : props.prevNext[0]);
       };
 
     const clickStandard = (standard: XASStandard) => {

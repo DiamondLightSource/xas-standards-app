@@ -8,6 +8,10 @@ export interface Edge {
   id: number;
 }
 
+export interface Person {
+  identifier: string;
+}
+
 export interface XASData {
   energy: Array<number>;
   mutrans: Array<number>;
@@ -37,6 +41,10 @@ export interface XASStandard {
   facility: string;
   collection_date: string;
   beamline: Beamline;
+}
+
+export interface AdminXASStandard extends XASStandard {
+  submitter: Person
 }
 
 export interface XASStandardInput {

@@ -10,7 +10,7 @@ async function enableMocking() {
     return;
   }
 
-  axios.defaults.headers.common['Authorization'] = 'Bearer Test User'
+  axios.defaults.headers.common["Authorization"] = "Bearer Test User";
 
   const { worker } = await import("./mocks/browser");
 

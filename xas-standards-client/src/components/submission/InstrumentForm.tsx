@@ -10,13 +10,13 @@ import {
 
 import { Beamline } from "../../models";
 
-function InstrumentForm(props : {
-  beamlines : Beamline[]
+function InstrumentForm(props: {
+  beamlines: Beamline[];
   beamlineHeader: string;
   beamlineId: number;
-  setBeamlineId: React.Dispatch<React.SetStateAction<number>>;
+  setBeamlineId: (id: number) => void;
   date: string;
-  setDate: React.Dispatch<React.SetStateAction<string>>;
+  setDate: (data: string) => void;
 }) {
   const beamlines = props.beamlines;
   const beamlineHeader = props.beamlineHeader;
@@ -26,11 +26,18 @@ function InstrumentForm(props : {
   const setDate = props.setDate;
 
   return (
-    <Grid component="fieldset" container spacing={1} justifyContent={"flex-start"}>
+    <Grid
+      component="fieldset"
+      container
+      spacing={1}
+      justifyContent={"flex-start"}
+    >
       <legend>Instrument</legend>
       <Grid item xs={6}>
         <FormControl fullWidth>
-          <InputLabel margin="dense" id="beamline">Beamline</InputLabel>
+          <InputLabel margin="dense" id="beamline">
+            Beamline
+          </InputLabel>
           <Select
             name="beamline"
             id="beamline"
@@ -47,18 +54,18 @@ function InstrumentForm(props : {
         </FormControl>
       </Grid>
       <Grid item xs={6}>
-      <FormControl fullWidth>
-      <TextField
-      InputLabelProps={{ shrink: true }} 
-      margin="dense" 
-        type="datetime-local"
-        id="date"
-        value={date}
-        label="Date Measured"
-        variant="outlined"
-        onChange={(e) => setDate(e.target.value)}
-      />
-      </FormControl>
+        <FormControl fullWidth>
+          <TextField
+            InputLabelProps={{ shrink: true }}
+            margin="dense"
+            type="datetime-local"
+            id="date"
+            value={date}
+            label="Date Measured"
+            variant="outlined"
+            onChange={(e) => setDate(e.target.value)}
+          />
+        </FormControl>
       </Grid>
       <Grid item xs={6}>
         <Typography>Beamline from Header: {beamlineHeader}</Typography>

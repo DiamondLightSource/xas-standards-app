@@ -10,7 +10,7 @@ import {
   AdminXASStandard,
 } from "../models";
 
-import { response } from "./data_response";
+import { data_response } from "./data_response";
 
 //api/user
 
@@ -139,11 +139,20 @@ export const handlers = [
 
   http.get("/api/data/*", () => {
     // ...and respond to them using this JSON response.
-    return HttpResponse.json(response);
+    return HttpResponse.json(data_response);
   }),
 
 
-  http.get("/api/admin/data/*", () => {
+  http.get("/api/admin/data/*", ({request}) => {
+
+    const url = new URL(request.url)
+
+    const format = url.searchParams.get('format')
+
+    if (format === "json") {
+      return HttpResponse.json(data_response);
+    }
+
     const file_content = "# XDI/1.0\n# Column.1: energy eV\n# Column.2: i0\n# Column.3: itrans\n# Column.4: irefer\n# Beamline.name: SSRL 4-3\n# Detector.I0: N2 15cm\n# Detector.I1: N2 30cm\n# Detector.I2: N2 15cm\n# Element.edge: K\n# Element.symbol: Mn\n# Mono.d_spacing: 1.92009\n# Mono.name: Si(220)\n# Mono.notes: unfocused, detuned 10%\n# Sample.formula: MnO\n# Sample.name: MnO\n# Sample.prep: powder, mixed with B(OH)3\n# Sample.reference: Mn filter\n# Sample.temperature: room temperature\n# Scan.start_time: 1995-06-20 02:43:21\n# ///\n#    Note: mono d_spacing is nominal!\n#     217  E XMU I0\n#-------------\n#   energy   i0   itrans  irefer\n    6520.0030  31260.500000  39559.300308  21748.998701\n    6521.0010  31244.500000  39558.301090  21716.000970\n    6522.0000  31237.500000  39580.299067  21723.999044\n    6523.0000  31219.500000  39528.301127  21592.000515\n    6523.9990  31208.500000  39531.301203  21565.999852\n    6524.9990  31201.500000  39519.300411  21505.000093\n    6525.9990  31194.500000  39532.301500  21492.999925\n    6527.0000  31185.500000  39519.299329  21431.998092\n    6528.0000  31175.500000  39487.301134  21332.000793\n    6529.0020  31166.500000  39494.301671  21298.999505\n    6530.0030  31163.500000  39482.302684  21245.999911\n    6531.0060  31152.500000  39481.302240  21203.000376\n    6532.0080  31148.500000  39485.301549  21151.000091\n    6533.0110  31127.500000  39419.301134  21016.000430\n"
     return HttpResponse.text(file_content)
   }),

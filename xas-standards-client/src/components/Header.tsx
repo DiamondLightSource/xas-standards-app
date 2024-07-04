@@ -10,7 +10,7 @@ import ListItem from "@mui/material/ListItem";
 import List from "@mui/material/List";
 import ListItemText from "@mui/material/ListItemText";
 import Stack from "@mui/material/Stack";
-import {Checkbox, Switch } from "@mui/material";
+import { Checkbox } from "@mui/material";
 
 import { NavLink } from "react-router-dom";
 
@@ -41,11 +41,14 @@ function NavListItem(props: { to: string; label: string }) {
   );
 }
 
-export default function Header(props : {colorMode : string; toggleColorMode : any }) {
+export default function Header(props: {
+  colorMode: string;
+  toggleColorMode: () => void;
+}) {
   const user = useContext(UserContext);
   console.log(user);
   const loggedIn = user != null;
-  const admin = user != null && user.admin
+  const admin = user != null && user.admin;
   console.log(loggedIn);
 
   const navitems = {
@@ -57,47 +60,47 @@ export default function Header(props : {colorMode : string; toggleColorMode : an
 
   return (
     <AppBar style={{ position: "static" }}>
-      <Toolbar sx={{justifyContent:"space-between", alignItems:"center"}}>
+      <Toolbar sx={{ justifyContent: "space-between", alignItems: "center" }}>
         <Stack direction="row" alignItems={"center"} spacing={2}>
-        <DiamondIcon />
-        <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-          XAS Standards
-        </Typography>
-        <List component={Stack} direction="row">
-          {Object.entries(navitems).map(([key, value]) => (
-            <ListItem key={key}>
-              <ListItemButton
-                component={NavLink}
-                to={value}
-                sx={{
-                  "&.active": {
-                    color: (theme) => theme.palette.text.secondary,
-                  },
-                }}
-              >
-                <ListItemText primary={key} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-          {loggedIn && (
-            <NavListItem to="/submit" label="Submit" />
-          ) }
-          {admin && (
-            <NavListItem to="/review" label="Review" />
-          ) }
-        </List>
+          <DiamondIcon />
+          <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+            XAS Standards
+          </Typography>
+          <List component={Stack} direction="row">
+            {Object.entries(navitems).map(([key, value]) => (
+              <ListItem key={key}>
+                <ListItemButton
+                  component={NavLink}
+                  to={value}
+                  sx={{
+                    "&.active": {
+                      color: (theme) => theme.palette.text.secondary,
+                    },
+                  }}
+                >
+                  <ListItemText primary={key} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+            {loggedIn && <NavListItem to="/submit" label="Submit" />}
+            {admin && <NavListItem to="/review" label="Review" />}
+          </List>
         </Stack>
         <Stack direction="row" alignItems={"center"}>
-        <Checkbox icon={<LightModeIcon />} checkedIcon={<DarkModeIcon />} checked={props.colorMode === "dark"} onChange={props.toggleColorMode.toggleColorMode}></Checkbox>
-        {!loggedIn ? (
+          <Checkbox
+            icon={<LightModeIcon />}
+            checkedIcon={<DarkModeIcon />}
+            checked={props.colorMode === "dark"}
+            onChange={props.toggleColorMode}
+          ></Checkbox>
+          {!loggedIn ? (
             <NavListItem to="/login" label="Login" />
-          ) : (        <Stack alignItems={"flex-end"}>
-                        <UserIcon />
-            <Typography>
-              {user.identifier}
-            </Typography>
-
-          </Stack>)}
+          ) : (
+            <Stack alignItems={"flex-end"}>
+              <UserIcon />
+              <Typography>{user.identifier}</Typography>
+            </Stack>
+          )}
         </Stack>
       </Toolbar>
     </AppBar>

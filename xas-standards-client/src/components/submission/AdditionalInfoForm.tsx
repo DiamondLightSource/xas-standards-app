@@ -1,13 +1,11 @@
-
-import { Grid, TextField, Button} from "@mui/material";
+import { Grid, TextField, Button } from "@mui/material";
 
 import VisuallyHiddenInput from "./VisuallyHiddenInput";
 
-function AdditionalInformationForm(props : {
-  comments : string;
-  setComments: React.Dispatch<React.SetStateAction<string>>;
-  handleFile2 : React.ChangeEventHandler<HTMLInputElement>;
-
+function AdditionalInformationForm(props: {
+  comments: string;
+  setComments: (comments: string) => void;
+  handleFile2: React.ChangeEventHandler<HTMLInputElement>;
 }) {
   const comments = props.comments;
   const setComments = props.setComments;
@@ -18,7 +16,7 @@ function AdditionalInformationForm(props : {
       <legend>Additional Information</legend>
       <Grid item xs={6}>
         <TextField
-        margin="dense" 
+          margin="dense"
           id="scomments"
           label="Comments"
           variant="outlined"
@@ -27,17 +25,20 @@ function AdditionalInformationForm(props : {
         />
       </Grid>
       <Grid item xs={6}>
-
-              <Button
-      component="label"
-      role={undefined}
-      variant="contained"
-      tabIndex={-1}
-    >
-      Upload
-     
-      <VisuallyHiddenInput type="file" name="file1" onChange={handleFile2} multiple/>
-      </Button>
+        <Button
+          component="label"
+          role={undefined}
+          variant="contained"
+          tabIndex={-1}
+        >
+          Upload
+          <VisuallyHiddenInput
+            type="file"
+            name="file1"
+            onChange={handleFile2}
+            multiple
+          />
+        </Button>
       </Grid>
     </Grid>
   );
