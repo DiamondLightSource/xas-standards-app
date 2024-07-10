@@ -17,7 +17,6 @@ import { data_response } from "./data_response";
 export const handlers = [
 
   http.post('/api/standards', () => {
-    console.log('Captured a "POST /api/standards" request')
     const standard1: XASStandard = {
       beamline: { facility: { name: "SSRL" }, name: "4-1", id:1 },
       citation:

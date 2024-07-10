@@ -112,8 +112,7 @@ function StandardSubmissionStepper() {
 
     axios
       .post(standards_url, form)
-      .then((response: AxiosResponse) => {
-        console.log(response);
+      .then(() => {
         window.alert("Thank you for your submission");
         navigate("/view");
       })

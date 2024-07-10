@@ -67,6 +67,10 @@ function ElementSelector(props: {
       >
         <SimplePeriodicTable
           onClickElement={(el) => {
+            if (el >= elements.length) {
+              el = 0;
+            }
+
             props.setSelectedElement(el);
             setAnchorEl(null);
           }}

@@ -140,7 +140,6 @@ function XASChart(props: {
             label="Transmission"
             value={props.showTrans}
             onToggle={() => {
-              console.log(!props.showTrans);
               props.setShowTrans(!props.showTrans);
             }}
             disabled={!props.contains[0]}

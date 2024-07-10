@@ -35,7 +35,7 @@ function StandardSubmission() {
   const { elements, edges, beamlines, licences } = useContext(MetadataContext);
 
   const [file, setFile] = useState<File>();
-  const [file2, setFile2] = useState<FileList>();
+  // const [file2, setFile2] = useState<FileList>();
 
   const [elementId, setElementId] = useState(1);
   const [edgeId, setEdgeId] = useState(1);
@@ -79,16 +79,9 @@ function StandardSubmission() {
     //LICENCE
     form.append("licence", licence);
 
-    if (file2 != null) {
-      for (let i = 0; i < file2.length; i++) {
-        form.append("additional_files", file2[i]);
-      }
-    }
-
     axios
       .post(standards_url, form)
-      .then((response: AxiosResponse) => {
-        console.log(response);
+      .then(() => {
         window.alert("Thank you for your submission");
         navigate("/view");
       })
@@ -142,12 +135,6 @@ function StandardSubmission() {
     }
   };
 
-  const handleFile2 = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files != null) {
-      setFile2(event.target.files);
-    }
-  };
-
   return (
     <Box
       display="flex"
@@ -170,26 +157,32 @@ function StandardSubmission() {
       >
         <Box component="fieldset">
           <legend>XDI File</legend>
-          <Button
-            variant="contained"
-            type="submit"
-            role={undefined}
-            tabIndex={-1}
-            component="label"
-          >
-            Upload
-            <VisuallyHiddenInput
-              type="file"
-              name="file1"
-              onChange={handleFile}
-            />
-          </Button>
-          <Typography>
-            Submitted file must be in xdi format and contain an energy column,
-            and either "mu" datasets or "i" datasets with corresponding i0.
-            Inclusion of Reference datasets (murefer or irefer with i0) is
-            mandatory.
-          </Typography>
+          <Grid container spacing={2} alignItems="flex-start">
+            <Grid item xs={2}>
+              <Button
+                variant="contained"
+                type="submit"
+                role={undefined}
+                tabIndex={-1}
+                component="label"
+              >
+                Upload
+                <VisuallyHiddenInput
+                  type="file"
+                  name="file1"
+                  onChange={handleFile}
+                />
+              </Button>
+            </Grid>
+            <Grid item xs={10}>
+              <Typography>
+                Submitted file must be in xdi format and contain an energy
+                column, and either "mu" datasets or "i" datasets with
+                corresponding i0. Inclusion of Reference datasets (murefer or
+                irefer with i0) is mandatory.
+              </Typography>
+            </Grid>
+          </Grid>
         </Box>
         <Grid container spacing={2} alignItems="flex-start">
           <Grid item xs={6}>
@@ -234,7 +227,6 @@ function StandardSubmission() {
         <AdditionalInformationForm
           comments={comments}
           setComments={setComments}
-          handleFile2={handleFile2}
         />
         <Grid item xs={6}>
           <FormControl fullWidth>
@@ -259,8 +251,7 @@ function StandardSubmission() {
             <FormControlLabel
               required
               control={<Checkbox />}
-              label="By ticking I confirm info is correct and I grant permission for
-            diamond to publish data under selected licence"
+              label="By ticking I confirm info is correct and I grant permissionfor diamond to publish data under selected licence and that I agree to the terms of use"
             />
           </Grid>
         </Grid>
