@@ -1,25 +1,15 @@
-# This file is for use as a devcontainer and a runtime container
-#
-# The devcontainer should use the build target and run as root with podman
-# or docker with user namespaces.
-#
+#build api
+#copy to runtime
 FROM python:3.11 as build
 
 ARG PIP_OPTIONS=.
-
-# Add any system dependencies for the developer/build environment here e.g.
-# RUN apt-get update && apt-get upgrade -y && \
-#     apt-get install -y --no-install-recommends \
-#     desired-packages \
-#     && rm -rf /var/lib/apt/lists/*
 
 # set up a virtual environment and put it in PATH
 RUN python -m venv /venv
 ENV PATH=/venv/bin:$PATH
 
-# Copy any required context for the pip install over
-COPY . /context
-WORKDIR /context
+WORKDIR /api
+COPY . .
 
 # install python package into /venv
 RUN pip install ${PIP_OPTIONS}
@@ -32,6 +22,9 @@ FROM python:3.11-slim as runtime
 COPY --from=build /venv/ /venv/
 ENV PATH=/venv/bin:$PATH
 
+RUN apt-get update && apt-get install libpq5 -y
+
+EXPOSE 5000
+
 # change this entrypoint if it is not the same as the repo
 ENTRYPOINT ["xas-standards-api"]
-CMD ["--version"]

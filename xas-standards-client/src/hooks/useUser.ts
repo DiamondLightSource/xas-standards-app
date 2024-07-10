@@ -11,7 +11,6 @@ function useUser(): User | null {
     axios
       .get(user_url)
       .then((res: AxiosResponse) => {
-        // console.log(res.status);
         setCurrentUser({ identifier: res.data.user, admin: res.data.admin});
       })
       .catch((error) => {

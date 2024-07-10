@@ -17,7 +17,8 @@ import { useState, useMemo } from "react";
 import { Stack } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-import ReviewPage from "./components/ReviewPage.tsx";
+import ReviewPage from "./components/review/ReviewPage.tsx";
+import Terms from "./components/Terms.tsx";
 
 function App() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -56,6 +57,7 @@ function App() {
             <Routes>
               <Route path="/" element={<WelcomePage />} />
               <Route path="/view" element={<StandardViewerMui />} />
+              <Route path="/terms" element={<Terms />} />
               <Route
                 path="/submit"
                 element={

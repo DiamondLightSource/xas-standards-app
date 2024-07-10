@@ -2,7 +2,8 @@ import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 
-import { useContext } from "react";
+import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { UserContext } from "../contexts/UserContext";
 
 import ListItemButton from "@mui/material/ListItemButton";
@@ -10,7 +11,7 @@ import ListItem from "@mui/material/ListItem";
 import List from "@mui/material/List";
 import ListItemText from "@mui/material/ListItemText";
 import Stack from "@mui/material/Stack";
-import { Checkbox } from "@mui/material";
+import { Checkbox, IconButton, Menu, MenuItem } from "@mui/material";
 
 import { NavLink } from "react-router-dom";
 
@@ -46,17 +47,32 @@ export default function Header(props: {
   toggleColorMode: () => void;
 }) {
   const user = useContext(UserContext);
-  console.log(user);
   const loggedIn = user != null;
   const admin = user != null && user.admin;
-  console.log(loggedIn);
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const navigate = useNavigate();
 
   const navitems = {
     Home: "/",
     View: "/view",
+    Terms: "/terms",
   };
 
-  Object.keys(navitems).forEach((k) => console.log(k));
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const signOut = () => {
+    handleClose();
+    console.log("Sign out");
+    navigate("/oauth2/sign_out");
+    window.location.reload();
+  };
 
   return (
     <AppBar style={{ position: "static" }}>
@@ -97,7 +113,34 @@ export default function Header(props: {
             <NavListItem to="/login" label="Login" />
           ) : (
             <Stack alignItems={"flex-end"}>
-              <UserIcon />
+              <IconButton
+                size="large"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                color="inherit"
+              >
+                <UserIcon />
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                <MenuItem onClick={signOut}>Sign out</MenuItem>
+              </Menu>
+
               <Typography>{user.identifier}</Typography>
             </Stack>
           )}

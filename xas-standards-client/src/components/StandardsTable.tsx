@@ -17,7 +17,7 @@ const nResults = 7;
 function StandardsTable(props: {
   standards: XASStandard[];
   elements: Element[];
-  setStandards: (standards : XASStandard[]) => void;
+  setStandards: (standards: XASStandard[]) => void;
   updatePlot: (id: number) => void;
 }): JSX.Element {
   const [selectedStandard, setSelectedStandard] = useState<XASStandard>();
@@ -33,7 +33,7 @@ function StandardsTable(props: {
 
       let symbol = null;
 
-      if (z > 0) {
+      if (z > 0 && z <= elements.length) {
         symbol = elements[z - 1].symbol;
       }
 
@@ -72,15 +72,15 @@ function StandardsTable(props: {
         selectedElement={selectedElement}
         setSelectedElement={setSelectedElement}
       />
-      <StandardsTableView standards={props.standards}
-      updatePlot={props.updatePlot}
-      selectedStandard={selectedStandard}
-      setSelectedStandard={setSelectedStandard} 
-      setCurrent={setCurrent}
-      prevNext={prevNext}/>
-      {selectedStandard && 
-      <StandardMetadataCard standard={selectedStandard} />
-      }
+      <StandardsTableView
+        standards={props.standards}
+        updatePlot={props.updatePlot}
+        selectedStandard={selectedStandard}
+        setSelectedStandard={setSelectedStandard}
+        setCurrent={setCurrent}
+        prevNext={prevNext}
+      />
+      {selectedStandard && <StandardMetadataCard standard={selectedStandard} />}
     </Stack>
   );
 }

@@ -1,12 +1,12 @@
 import { Tab, Tabs, Box } from "@mui/material";
 
-import StandardMetadataCard from "./StandardMetadataCard";
+import StandardMetadataCard from "../StandardMetadataCard";
 import ReviewTextView from "./ReviewTextView";
 
 import { useState } from "react";
 import ReviewCard from "./ReviewCard";
 
-import { AdminXASStandard } from "../models";
+import { AdminXASStandard } from "../../models";
 
 interface TabPanelProps {
   children?: React.ReactNode;

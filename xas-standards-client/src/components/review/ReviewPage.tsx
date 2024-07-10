@@ -1,13 +1,13 @@
 import ReviewTable from "./ReviewTable";
 
 import { Grid } from "@mui/material";
-import XASChart from "./StandardsChart";
+import XASChart from "../StandardsChart";
 
 import axios from "axios";
 
 import { useState } from "react";
 
-import { XASData, AdminXASStandard } from "../models";
+import { XASData, AdminXASStandard } from "../../models";
 
 const data_url = "/api/admin/data";
 
