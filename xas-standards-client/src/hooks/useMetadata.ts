@@ -11,6 +11,7 @@ function useMetadata(): AppMetadata {
     elements: [],
     edges: [],
     licences: [],
+    sample_forms: []
   });
 
   useEffect(() => {

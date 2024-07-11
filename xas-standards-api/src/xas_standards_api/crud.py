@@ -17,6 +17,7 @@ from .models.models import (
     Person,
     PersonInput,
     ReviewStatus,
+    SampleForm,
     XASStandard,
     XASStandardAdminReviewInput,
     XASStandardData,
@@ -82,6 +83,7 @@ def get_metadata(session):
     output["edges"] = select_all(session, Edge)
     output["beamlines"] = select_all(session, Beamline)
     output["licences"] = list(LicenceType)
+    output["sample_forms"] = list(SampleForm)
 
     return output
 
@@ -260,3 +262,13 @@ def is_admin_user(session: Session, user_id: str):
         raise HTTPException(status_code=401, detail=f"User {user_id} not admin")
 
     return True
+
+
+def get_registered_elements(session: Session):
+    statement = (
+        select(Element)
+        .where(XASStandard.element_z == Element.z)
+        .where(XASStandard.review_status == ReviewStatus.approved)
+    )
+    results = session.exec(statement)
+    return results.unique().all()

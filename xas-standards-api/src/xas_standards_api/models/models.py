@@ -14,7 +14,12 @@ class ReviewStatus(enum.Enum):
 class LicenceType(enum.Enum):
     cc_by = "cc_by"
     cc_0 = "cc_0"
-    logged_in_only = "logged_in_only"
+
+
+class SampleForm(enum.Enum):
+    other = "other"
+    foil = "foil"
+    pellet = "pellet"
 
 
 class PersonInput(SQLModel):
@@ -102,6 +107,7 @@ class XASStandardInput(SQLModel):
     sample_name: str
     sample_prep: Optional[str]
     sample_comp: Optional[str]
+    sample_form: SampleForm = Field(sa_column=Column(Enum(SampleForm)))
     beamline_id: int = Field(foreign_key="beamline.id")
     licence: LicenceType = Field(sa_column=Column(Enum(LicenceType)))
 
