@@ -57,6 +57,7 @@ export interface AppMetadata {
   elements: Element[];
   edges: Edge[];
   licences: string[];
+  sample_forms: string[];
 }
 
 export interface User {

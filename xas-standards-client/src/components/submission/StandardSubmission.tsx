@@ -32,7 +32,8 @@ import {
 const standards_url = "/api/standards";
 
 function StandardSubmission() {
-  const { elements, edges, beamlines, licences } = useContext(MetadataContext);
+  const { elements, edges, beamlines, licences, sample_forms } =
+    useContext(MetadataContext);
 
   const [file, setFile] = useState<File>();
   // const [file2, setFile2] = useState<FileList>();
@@ -42,6 +43,7 @@ function StandardSubmission() {
   const [sampleName, setSampleName] = useState("");
   const [sampleComp, setSampleComp] = useState("");
   const [samplePrep, setSamplePrep] = useState("");
+  const [sampleForm, setSampleForm] = useState(sample_forms[0]);
   const [beamlineId, setBeamlineId] = useState(1);
   const [beamlineHeader, setBeamlineHeader] = useState("");
   const [doi, setDOI] = useState("");
@@ -72,6 +74,7 @@ function StandardSubmission() {
     form.append("sample_name", sampleName);
     form.append("sample_comp", sampleComp);
     form.append("sample_prep", samplePrep);
+    form.append("sample_form", sampleForm);
     form.append("doi", doi);
     form.append("citation", citation);
     form.append("comments", comments);
@@ -203,6 +206,9 @@ function StandardSubmission() {
               setSampleComp={setSampleComp}
               samplePrep={samplePrep}
               setSamplePrep={setSamplePrep}
+              sampleForm={sampleForm}
+              setSampleForm={setSampleForm}
+              sampleFormOptions={sample_forms}
             />
           </Grid>
           <Grid item xs={6}>

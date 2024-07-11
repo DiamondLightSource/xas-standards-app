@@ -1,4 +1,11 @@
-import { Grid, TextField } from "@mui/material";
+import {
+  Grid,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 
 function SampleForm(props: {
   sampleName: string;
@@ -7,6 +14,9 @@ function SampleForm(props: {
   setSampleComp: (composition: string) => void;
   samplePrep: string;
   setSamplePrep: (preparation: string) => void;
+  sampleForm: string;
+  setSampleForm: (preparation: string) => void;
+  sampleFormOptions: string[];
 }) {
   const sampleName = props.sampleName;
   const setSampleName = props.setSampleName;
@@ -49,12 +59,24 @@ function SampleForm(props: {
         />
       </Grid>
       <Grid item xs={6}>
-        <TextField
-          margin="dense"
-          id="sampleform"
-          label="Sample Form"
-          variant="outlined"
-        />
+        <FormControl fullWidth>
+          <InputLabel margin="dense" id="sampleform">
+            Sample Form
+          </InputLabel>
+          <Select
+            name="sampleform"
+            id="sampleform"
+            label="Sample Form"
+            value={props.sampleForm}
+            onChange={(e) => props.setSampleForm(e.target.value)}
+          >
+            {props.sampleFormOptions.map((x, y) => (
+              <MenuItem key={y} value={x}>
+                {x}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </Grid>
     </Grid>
   );

@@ -224,7 +224,8 @@ CREATE TABLE xas_standard_data (
 COMMENT ON TABLE xas_standard_data IS 'Data file storing the standard data';
 
 CREATE TYPE review_status_enum AS ENUM('pending', 'approved', 'rejected');
-CREATE TYPE licence_enum AS ENUM('cc_by', 'cc_0', 'logged_in_only');
+CREATE TYPE licence_enum AS ENUM('cc_by', 'cc_0');
+CREATE TYPE sample_form_enum AS ENUM('other', 'foil', 'pellet');
 
 CREATE Table xas_standard (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -241,6 +242,7 @@ CREATE Table xas_standard (
     sample_name TEXT,
     sample_prep TEXT,
     sample_comp TEXT,
+    sample_form sample_form_enum,
     beamline_id INTEGER,
     mono_name TEXT,
     mono_dspacing TEXT,

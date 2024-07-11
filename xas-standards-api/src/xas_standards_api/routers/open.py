@@ -4,7 +4,14 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi_pagination.cursor import CursorPage
 from sqlmodel import Session
 
-from ..crud import get_data, get_file, get_metadata, get_standard, read_standards_page
+from ..crud import (
+    get_data,
+    get_file,
+    get_metadata,
+    get_registered_elements,
+    get_standard,
+    read_standards_page,
+)
 from ..database import get_session
 from ..models.models import ReviewStatus
 from ..models.response_models import (
@@ -48,3 +55,8 @@ async def read_data(
         return get_file(session, id)
 
     return get_data(session, id)
+
+
+@router.get("/api/elements/metrics")
+async def read_elements(session: Session = Depends(get_session)):
+    return get_registered_elements(session)

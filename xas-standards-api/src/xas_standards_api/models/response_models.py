@@ -36,3 +36,4 @@ class MetadataResponse(SQLModel):
     elements: List[Element]
     edges: List[Edge]
     licences: List[str]
+    sample_forms: List[str]
