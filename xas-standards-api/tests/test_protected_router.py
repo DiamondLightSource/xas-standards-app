@@ -69,6 +69,7 @@ def test_protected_router(tmpdir):
             "beamline_id": 1,
             "sample_name": unique_sample_name,
             "sample_prep": "test",
+            "sample_form": "foil",
             "doi": "doi",
             "citation": "citation",
             "comments": "comments",
