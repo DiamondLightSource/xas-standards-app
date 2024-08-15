@@ -22,7 +22,7 @@ function ReviewPage() {
 
   function getData() {
     return (id: number) => {
-      axios.get(data_url + "/" + id + "/?format=json").then((response) => {
+      axios.get(data_url + "/" + id + "?format=json").then((response) => {
         const output: XASData = response.data as XASData;
         const containsTrans = output != null && output.mutrans.length != 0;
         const containsFluor = output != null && output.mufluor.length != 0;
