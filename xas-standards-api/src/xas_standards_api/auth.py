@@ -11,6 +11,7 @@ from fastapi.security.http import HTTPAuthorizationCredentials, HTTPBearer
 get_bearer_token = HTTPBearer(auto_error=True)
 
 oidc_user_info_endpoint = os.environ.get("OIDC_USER_INFO_ENDPOINT")
+oidc_id_key = os.environ.get("OIDC_ID_KEY", "id")
 dev = False
 
 env_value = os.environ.get("FASTAPI_APP_ENV")
@@ -50,4 +51,4 @@ async def get_current_user(
             detail="Invalid user token",
         )
 
-    return response.json()["id"]
+    return response.json()[oidc_id_key]
