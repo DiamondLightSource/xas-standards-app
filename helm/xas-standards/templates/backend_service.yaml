@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "xas-standards.fullname" . }}-backend
+spec:
+  ports:
+  - name: http
+    port: {{ .Values.global.backend.port }}
+    protocol: TCP
+    targetPort: {{ .Values.backend.service.targetPort }}
+  selector:
+      app: {{ include "xas-standards.fullname" . }}-backend-statefulset
+  type: {{ .Values.backend.service.type }}

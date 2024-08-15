@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "xas-standards.fullname" . }}-frontend
+spec:
+  ports:
+    - name: http
+      port: {{ .Values.global.frontend.port }}
+      protocol: TCP
+      targetPort: {{ .Values.frontend.service.targetPort }}
+  selector:
+      app: {{ include "xas-standards.fullname" . }}-frontend-deployment
+  type: {{ .Values.frontend.service.type }}

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dbpersons-configmap
+data:
+  users.sql: |-
+{{ .Files.Get "users.sql" | indent 4 }}

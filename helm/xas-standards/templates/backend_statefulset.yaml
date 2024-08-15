@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "xas-standards.fullname" . }}-backend-statefulset
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "xas-standards.fullname" . }}-backend-statefulset
+  template:
+    metadata:
+      labels:
+        app: {{ include "xas-standards.fullname" . }}-backend-statefulset
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}"
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.global.backend.port }}
+              protocol: TCP
+          volumeMounts:
+            - mountPath: {{ .Values.backend.volumeMounts.mountPath }}
+              name: {{ .Values.backend.volumeMounts.name }}
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pguser-password
+                  key: password
+            - name: POSTGRES_PROT
+              value: {{ .Values.backend.databaseConfig.protocol }}
+            - name: POSTGRES_USERNAME
+              value: {{ .Values.backend.databaseConfig.username }}
+            - name: POSTGRES_DB_NAME
+              value: {{ .Values.backend.databaseConfig.dbname }}
+            - name: POSTGRES_ADDRESS
+              value: {{.Release.Name}}-postgresql.{{.Release.Namespace}}.svc.cluster.local
+            - name: POSTGRESURL
+              value: "$(POSTGRES_PROT)://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_ADDRESS)/$(POSTGRES_DB_NAME)"
+            - name: OIDC_USER_INFO_ENDPOINT
+              value: {{ .Values.backend.authConfig.userInfoEndpoint}}
+            - name: OIDC_ID_KEY
+              value: {{ .Values.backend.authConfig.idKey}}
+            - name: PVC_LOCATION
+              value: {{ .Values.backend.volumeMounts.mountPath }}
+
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: {{ .Values.backend.persistentVolumeClaim.whenDeleted }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ .Values.backend.volumeMounts.name }}
+      spec:
+        {{- toYaml .Values.backend.persistentVolumeClaim.spec | nindent 12 }}
+        # storageClassName: db-nvme-storage
