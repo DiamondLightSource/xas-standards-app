@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "xas-standards.fullname" . }}-frontend-deployment
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "xas-standards.fullname" . }}-frontend-deployment
+  template:
+    metadata:
+      labels:
+         app: {{ include "xas-standards.fullname" . }}-frontend-deployment
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.global.frontend.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.frontend.resources | nindent 12 }}

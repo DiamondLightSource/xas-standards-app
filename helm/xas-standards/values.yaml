@@ -1,0 +1,153 @@
+# Default values for xas-standards.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+#need these to be global for tpl-ing of the oauth2-proxy config
+global:
+  name: xas-standards
+  frontend:
+    port: 8081
+  backend:
+    port: 8080
+    
+postgresql:
+  image:
+     debug: true
+  auth:
+     existingSecret: postgres-passwords
+     secretKeys:
+         adminPasswordKey: password
+  primary:
+    service:
+      type: LoadBalancer
+    podAntiAffinityPreset: hard
+    resources:
+      requests:
+        cpu: 500m
+        memory: 512Mi
+      limits:
+        cpu: 2
+        memory: 2Gi
+    initdb:
+        scriptsSecret: postgres-init-script
+    extraVolumeMounts:
+        - name: custom-init-scripts-volume
+          mountPath: /docker-entrypoint-initdb.d/tables
+        - name: custom-user-scripts-volume
+          mountPath: /docker-entrypoint-initdb.d/users
+    extraVolumes:
+        - name: custom-init-scripts-volume
+          configMap:
+            name: dbtables-configmap
+        - name: custom-user-scripts-volume
+          configMap:
+            name: dbpersons-configmap
+  persistence:
+    storageClass: db-nvme-storage
+    size: 50Gi
+
+replicaCount: 1
+
+frontend:
+  service:
+    type: ClusterIP
+    targetPort: 80
+  image:
+    repository: ""
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: latest
+  resources:
+    limits:
+      cpu: "1"
+      memory: 300M
+
+backend:
+  service:
+    type: ClusterIP
+    targetPort: 5000
+  image:
+    repository: ""
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: latest
+  resources:
+    limits:
+      cpu: "1"
+      memory: 300M
+  volumeMounts:
+    name: my-pv-volume
+    mountPath: "/scratch/xas-standards-pretend-pvc"
+  persistentVolumeClaim:
+    whenDeleted: Retain
+    spec:
+      accessModes:
+        - "ReadWriteOnce"
+      resources:
+        requests:
+          storage: 1Gi
+  databaseConfig:
+    username: xasadmin
+    dbname: xasstandarddb
+    protocol: "postgresql+psycopg2"
+  authConfig:
+    userInfoEndpoint: ""
+    idKey: ""
+
+# alpha
+oauth2-proxy:
+  extraVolumeMounts:
+  - name: proxy-secret
+    mountPath: "/etc/alpha"
+    readOnly: true 
+  extraVolumes:
+  - name: proxy-secret
+    secret:
+      secretName: oidc-secrets
+      items:
+      - key: client-secret
+        path: client-secret
+  config:
+    configFile: |-
+       email_domains = [ "*" ]
+       skip_auth_routes = ["GET=^/api/standards", "/static","GET=^/api/metadata", "GET=^/api/data", "GET=^/$","GET=^/assets"]
+       api_routes = ["^/api"]
+       skip_provider_button = true
+  ingress:
+    enabled: true
+    pathType: Prefix
+    hostname: ""
+    hosts: []
+    path: /
+  alphaConfig:
+    enabled: true
+    configFile: |
+      upstreamConfig:
+        proxyRawPath: true
+        upstreams:
+          - id: api
+            path: /api/
+            uri: http://{{ include "xas-standards.fullname" . }}-backend:{{.Values.global.backend.port}}
+          - id: client
+            path: /
+            #rewriteTarget: /
+            uri: http://{{ include "xas-standards.fullname" . }}-frontend:{{.Values.global.frontend.port}}
+    configData:
+      providers: []
+      injectRequestHeaders:
+      - name: Authorization
+        values:
+        - claim: access_token
+          prefix: "Bearer "
+      - name: x-forwarded-user
+        values:
+        - claim: user
+      - name: x-auth-request-user
+        values:
+        - claim: user
+      injectResponseHeaders:
+      - name: Identity
+        values:
+        - claim: id_token
+  redis:
+    enabled: false
